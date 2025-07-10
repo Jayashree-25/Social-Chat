@@ -12,14 +12,18 @@ const PORT = 5000 || process.env.PORT;
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req,res) => {
+app.get('/', (req, res) => {
     res.send("API is running...");
 });
 
+console.log("Loaded MONGO_URI:", process.env.MONGO_URI);
 mongoose.connect(process.env.MONGO_URI, {
-    useNewParser : true,
-    useUnifiedTopology : true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
 }).then(() => {
     console.log("MongoDB connected");
     app.listen(PORT, () => console.log(`Running at port ${PORT}`));
-}).catch((err) => console.error("error in MongoDB connection"));
+}).catch((err) => {
+  console.error('❌ MongoDB connection error:', err.message);
+  console.error(err); // optional: full error stack
+});
