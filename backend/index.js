@@ -23,5 +23,3 @@ mongoose.connect(process.env.MONGO_URI, {
     console.log("MongoDB connected");
     app.listen(PORT, () => console.log(`Running at port ${PORT}`));
 }).catch((err) => console.error("error in MongoDB connection"));
-
-//mongodb+srv://jayashree:socialchat123@cluster0.cxlv8.mongodb.net/social_chat?retryWrites=true&w=majority&appName=Cluster0
