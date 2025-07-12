@@ -5,7 +5,7 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-//POST
+//POST - REGISTER ROUTE
 router.post('/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -35,7 +35,40 @@ router.post('/register', async (req, res) => {
 
         res.status(201).json({ token, user: { name: newUser.name, email: newUser.email } });
     } catch (err) {
-        console.error('Register error: ', error.message);
+        console.error('Register error: ', err.message);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+//POST - LOGIN ROUTE
+router.post('/login', async (req, res) => {
+
+    try {
+        const { email, password } = req.body;
+
+        const existingUser = await User.findOne({ email });
+        if (!existingUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        //compare entered password with hashed one
+        const isMatch = await bcrypt.compare(password, existingUser.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+
+        //generate JWT
+        const token = jwt.sign(
+            { userId: existingUser._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
+        );
+
+        res.status(200).json({
+            token,
+            user: { name: existingUser.name, email: existingUser.email }
+        });
+    } catch (err) {
+        console.error('Login error: ', err.message);
         res.status(500).json({ message: 'Server error' });
     }
 });
