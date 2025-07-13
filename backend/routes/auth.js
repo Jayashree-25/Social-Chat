@@ -73,3 +73,10 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+
+// GET - Current logged-in user
+router.get('/me', verifyToken, (req, res) => {
+    res.status(200).json({ user: req.user });
+})
+
+export default router;
