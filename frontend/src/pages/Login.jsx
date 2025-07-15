@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
+import { Link } from "react-router-dom";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -93,7 +94,7 @@ const Login = () => {
             />
 
             <p style={{ textAlign: "center", marginTop: "20px" }}>
-                Don’t have an account yet? <a href="#">Sign up</a>
+                Don’t have an account yet? <Link href="/signup">Sign up</Link>
             </p>
         </div>
     )

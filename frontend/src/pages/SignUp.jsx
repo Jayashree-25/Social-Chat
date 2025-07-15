@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Signup = () => {
     const [formData, setFormDate] = useState({
@@ -118,11 +119,12 @@ const Signup = () => {
                 }}
             />
             <p style={{ textAlign: "center", marginBottom: "20px" }}>
-                Already have an account? <a href="#">Log in</a>
+                Already have an account? <Link href="/">Log in</Link>
             </p>
         </div >
     )
 }
+
 const inputStyle = {
     width: "100%",
     padding: "10px",
