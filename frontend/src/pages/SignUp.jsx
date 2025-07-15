@@ -91,7 +91,7 @@ const Signup = () => {
                 <label> Confirm Password </label>
                 <input
                     type="password"
-                    name="Confirmpassword"
+                    name="confirmpassword"
                     placeholder="*** ***"
                     value={formData.confirmPassword}
                     onChange={handleChange}
@@ -119,7 +119,7 @@ const Signup = () => {
                 }}
             />
             <p style={{ textAlign: "center", marginBottom: "20px" }}>
-                Already have an account? <Link href="/">Log in</Link>
+                Already have an account? <Link to="/">Log in</Link>
             </p>
         </div >
     )

@@ -94,7 +94,7 @@ const Login = () => {
             />
 
             <p style={{ textAlign: "center", marginTop: "20px" }}>
-                Don’t have an account yet? <Link href="/signup">Sign up</Link>
+                Don’t have an account yet? <Link to="/signup">Sign up</Link>
             </p>
         </div>
     )
