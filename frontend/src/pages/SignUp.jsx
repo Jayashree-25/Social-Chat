@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
-
+import axios from "axios";
 
 const Signup = () => {
     const [formData, setFormDate] = useState({
@@ -17,13 +17,27 @@ const Signup = () => {
         }));
     };
 
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
-        if (formDate.password !== formDate.confirmPassword) {
+        if (formData.password !== formData.confirmPassword) {
             alert("Password do not match!");
             return;
         }
-        console.log("Sign Up Data:", formData);
+
+        try {
+            const res = await axios.post('http://localhost:3000/api/auth/register', {
+                name: formData.name,
+                email: formData.email,
+                password: formData.password
+            });
+            console.log("Signup successful: ", res.data);
+            alert("Signup Successful!");
+            // Optionally: save token in localStorage, redirect user
+            localStorage.setItem("token", res.data.token);
+        } catch (err) {
+            console.error("Signup error:", err.response?.data || err.message);
+            alert(err.response?.data?.message || "Signup failed");
+        }
     };
 
     return (
@@ -103,7 +117,7 @@ const Signup = () => {
                     console.log("Google Sign Up Failed");
                 }}
             />
-            <p style={{ textAlign: "center", marginBottom: "20px"}}>
+            <p style={{ textAlign: "center", marginBottom: "20px" }}>
                 Already have an account? <a href="#">Log in</a>
             </p>
         </div >
