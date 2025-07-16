@@ -11,10 +11,16 @@ const MainLayout = () => {
                 <p><strong>Home</strong></p>
                 <p>Notifications</p>
                 <p>Profile</p>
-                <p>Logout</p>
+                <p onClick={() => {
+                    localStorage.removeItem("token");
+                    window.location.href = "/";
+                }} style={{ cursor: "pointer", color: "red" }}>
+                    Logout
+                </p>
             </div>
 
             {/* Middle Feed */}
+            
             <div style={{ width: "60%", padding: "20px" }}>
                 <h2>Welcome, {currentUser?.name || "User"}!</h2>
                 <div>
