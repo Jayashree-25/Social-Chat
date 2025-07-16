@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -101,9 +102,9 @@ const Login = () => {
             <GoogleLogin
                 onSuccess={async (credentialResponse) => {
                     try {
-                        const credential = credentialResponse;
+                        const credential = credentialResponse.credential;
                         // Send credential to backend
-                        const res = await axios.post('http://localhost:3000/api/auth/google', {
+                        const res = await axios.post('http://localhost:5000/api/auth/google', {
                             credential,
                         });
 
