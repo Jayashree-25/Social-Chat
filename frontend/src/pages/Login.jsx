@@ -99,8 +99,18 @@ const Login = () => {
             <div style={{ textAlign: "center", margin: "15px 0", color: "#aaa" }}>or</div>
 
             <GoogleLogin
-                onSuccess={(credentialResponse) => {
-                    console.log("Google Login Success:", credentialResponse);
+                onSuccess={async (credentialResponse) => {
+                    try {
+                        const res = await axios.post("http://localhost:3000/api/auth/google", {
+                            credential: credentialResponse.credential
+                        });
+
+                        localStorage.setItem("token", res.data.token);
+                        navigate("/home");
+                    } catch (err) {
+                        console.error("Google login failed:", err.response?.data || err.message);
+                        alert("Google Login Failed");
+                    }
                 }}
                 onError={() => {
                     console.log("Google Login Failed");
