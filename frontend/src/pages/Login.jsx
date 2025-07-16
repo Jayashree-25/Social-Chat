@@ -101,8 +101,10 @@ const Login = () => {
             <GoogleLogin
                 onSuccess={async (credentialResponse) => {
                     try {
-                        const res = await axios.post("http://localhost:3000/api/auth/google", {
-                            credential: credentialResponse.credential
+                        const credential = credentialResponse;
+                        // Send credential to backend
+                        const res = await axios.post('http://localhost:3000/api/auth/google', {
+                            credential,
                         });
 
                         localStorage.setItem("token", res.data.token);
@@ -114,6 +116,7 @@ const Login = () => {
                 }}
                 onError={() => {
                     console.log("Google Login Failed");
+                    alert("Google login failed");
                 }}
             />
 
