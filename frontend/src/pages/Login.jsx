@@ -1,15 +1,29 @@
 import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        console.log("Logging in with:", { email, password });
-        // You can send to backend here
+
+        try {
+            const res = await axios.post("http://localhost:3000/api/auth/login", {
+                email,
+                password,
+            });
+
+            localStorage.setItem("token", res.data.token); // Save token
+            console.log("Login successful:", res.data);
+
+            navigate("/home"); // redirect to main feed
+        } catch (err) {
+            console.error("Login failed:", err.response?.data || err.message);
+            alert(err.response?.data?.message || "Login failed");
+        }
     };
 
     return (
