@@ -1,27 +1,16 @@
 import React, { useContext } from "react";
 import { UserContext } from "../components/UserWrapper";
+import Sidebar from "../components/Sidebar";
 
 const MainLayout = () => {
     const { currentUser } = useContext(UserContext);
 
     return (
         <div style={{ display: "flex", height: "100vh" }}>
-            {/* Left Sidebar */}
-            <div style={{ width: "20%", background: "#f2f2f2", padding: "20px" }}>
-                <p><strong>Home</strong></p>
-                <p>Notifications</p>
-                <p>Profile</p>
-                <p onClick={() => {
-                    localStorage.removeItem("token");
-                    window.location.href = "/";
-                }} style={{ cursor: "pointer", color: "red" }}>
-                    Logout
-                </p>
-            </div>
+            <Sidebar />
 
             {/* Middle Feed */}
-            
-            <div style={{ width: "60%", padding: "20px" }}>
+            <div style={{ flex: 1, padding: "20px" }}>
                 <h2>Welcome, {currentUser?.name || "User"}!</h2>
                 <div>
                     <p>[Post 1]</p>
@@ -36,6 +25,6 @@ const MainLayout = () => {
             </div>
         </div>
     );
-}
+};
 
 export default MainLayout;
