@@ -1,6 +1,8 @@
 import React, { useContext } from "react";
 import { UserContext } from "../components/UserWrapper";
 import Sidebar from "../components/Sidebar";
+import AddIcon from "@mui/icons-material/Add";
+import { IconButton } from "@mui/material";
 
 const MainLayout = () => {
     const { currentUser } = useContext(UserContext);
@@ -10,8 +12,24 @@ const MainLayout = () => {
             <Sidebar />
 
             {/* Middle Feed */}
-            <div style={{ flex: 1, padding: "20px", overflow: "auto", height: "100vh" }}>
-                <h2>Welcome, {currentUser?.name || "User"}!</h2>
+            <div style={{ flex: 1, padding: "20px", overflow: "auto", height: "100vh", position: "relative" }}>
+                {/* Top-right + icon */}
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <IconButton
+                        style={{
+                            position: "sticky",
+                            top: "20px",
+                            right: "20px",
+                            alignSelf: "flex-end",
+                            color: "#734e9e",
+                            backgroundColor: "transparent",
+                            boxShadow: "none",
+                            zIndex: 10,
+                        }}
+                    >
+                        <AddIcon fontSize="large" />
+                    </IconButton>
+                </div>
 
                 {/* Sample long feed */}
                 <div>
