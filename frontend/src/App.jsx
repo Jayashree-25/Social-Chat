@@ -9,6 +9,7 @@ import NotificationsPage from './pages/NotificationsPage';
 const App = () => {
   return (
     <Routes>
+      
       <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/home" element={<MainLayout />} />
