@@ -20,49 +20,65 @@ const Sidebar = () => {
         <Box
             sx={{
                 width: "20%",
-                backgroundColor: "#fdfdfd",
                 padding: "20px",
-                boxShadow: 3,
                 borderRadius: "16px",
                 margin: "20px",
                 display: "flex",
                 flexDirection: "column",
                 height: "calc(100vh - 40px)",
+                background: "linear-gradient(135deg, rgba(0, 0, 50, 0.6), rgba(0, 0, 100, 0.2))",
+                backdropFilter: "blur(12px)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+                color: "white",
             }}
         >
-            {/* Stylish App Title */}
-            <Typography
-                variant="h5"
-                fontWeight="bold"
-                sx={{
-                    textAlign: "center",
-                    fontFamily: "'Pacifico', cursive",
-                    color: "#1976d2",
-                    mb: 4,
-                }}
-            >
-                Social Chat
+            {/* User Info */}
+            <Box sx={{ mb: 4 }}>
+                <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    sx={{
+                        textAlign: "center",
+                        fontFamily: "'Segoe UI', sans-serif",
+                        fontSize: "1.2rem",
+                    }}
+                >
+                    {currentUser?.username || "My Account"}
+                </Typography>
+                <Typography
+                    sx={{
+                        textAlign: "center",
+                        fontSize: "0.85rem",
+                        color: "rgba(255,255,255,0.7)",
+                    }}
+                >
+                    My Account
+                </Typography>
+            </Box>
+
+            <Typography variant="subtitle2" sx={{ mb: 1, opacity: 0.7 }}>
+                MENU
             </Typography>
 
             <List>
                 <ListItem button onClick={() => navigate("/home")}>
-                    <ListItemIcon><HomeIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ color: "white" }}><HomeIcon /></ListItemIcon>
                     <ListItemText primary="Home" />
                 </ListItem>
 
                 <ListItem button onClick={() => navigate("/notifications")}>
-                    <ListItemIcon><NotificationsIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ color: "white" }}><NotificationsIcon /></ListItemIcon>
                     <ListItemText primary="Notifications" />
                 </ListItem>
-
                 <ListItem button onClick={() => navigate("/profile")}>
-                    <ListItemIcon><AccountCircleIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ color: "white" }}><AccountCircleIcon /></ListItemIcon>
                     <ListItemText primary="Profile" />
                 </ListItem>
 
                 <ListItem button onClick={handleLogout}>
-                    <ListItemIcon><LogoutIcon sx={{ color: "red" }} /></ListItemIcon>
-                    <ListItemText primary="Logout" sx={{ color: "red" }} />
+                    <ListItemIcon sx={{ color: "white" }}><LogoutIcon /></ListItemIcon>
+                    <ListItemText primary="Logout" sx={{ color: "white" }} />
                 </ListItem>
             </List>
         </Box>
