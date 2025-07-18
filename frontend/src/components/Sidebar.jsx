@@ -45,7 +45,7 @@ const Sidebar = () => {
             </Typography>
 
             <List>
-                <ListItem button onClick={() => navigate("/")}>
+                <ListItem button onClick={() => navigate("/home")}>
                     <ListItemIcon><HomeIcon /></ListItemIcon>
                     <ListItemText primary="Home" />
                 </ListItem>
