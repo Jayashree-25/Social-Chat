@@ -5,9 +5,11 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { UserContext } from "./UserWrapper";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
     const { currentUser } = useContext(UserContext);
+    const navigate = useNavigate();
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -43,17 +45,17 @@ const Sidebar = () => {
             </Typography>
 
             <List>
-                <ListItem button>
+                <ListItem button onClick={() => navigate("/")}>
                     <ListItemIcon><HomeIcon /></ListItemIcon>
                     <ListItemText primary="Home" />
                 </ListItem>
 
-                <ListItem button>
+                <ListItem button onClick={() => navigate("/notifications")}>
                     <ListItemIcon><NotificationsIcon /></ListItemIcon>
                     <ListItemText primary="Notifications" />
                 </ListItem>
 
-                <ListItem button>
+                <ListItem button onClick={() => navigate("/profile")}>
                     <ListItemIcon><AccountCircleIcon /></ListItemIcon>
                     <ListItemText primary="Profile" />
                 </ListItem>
