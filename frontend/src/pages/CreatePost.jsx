@@ -20,9 +20,9 @@ const CreatePost = () => {
                     background: "rgba(255, 255, 255, 0.2)",
                     borderRadius: "20px",
                     padding: "2rem",
-                    width: "80%",
-                    maxWidth: "1000px",
-                    height: "600px", // Fixed consistent height
+                    width: "95%",
+                    maxWidth: "1300px",
+                    height: "600px", 
                     boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
                     border: "1px solid rgba(255, 255, 255, 0.3)",
                 }}
