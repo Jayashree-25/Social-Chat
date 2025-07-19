@@ -13,24 +13,6 @@ const MainLayout = () => {
 
             {/* Middle Feed */}
             <div style={{ flex: 1, padding: "20px", overflow: "auto", height: "100vh", position: "relative" }}>
-                {/* Top-right + icon */}
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                    <IconButton
-                        style={{
-                            position: "sticky",
-                            top: "20px",
-                            right: "20px",
-                            alignSelf: "flex-end",
-                            color: "#734e9e",
-                            backgroundColor: "transparent",
-                            boxShadow: "none",
-                            zIndex: 10,
-                        }}
-                    >
-                        <AddIcon fontSize="large" />
-                    </IconButton>
-                </div>
-
                 {/* Sample long feed */}
                 <div>
                     {Array.from({ length: 50 }).map((_, i) => (

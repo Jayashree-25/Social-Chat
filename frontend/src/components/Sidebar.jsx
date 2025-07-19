@@ -6,6 +6,8 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { UserContext } from "./UserWrapper";
 import { useNavigate } from "react-router-dom";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+
 
 const Sidebar = () => {
     const { currentUser } = useContext(UserContext);
@@ -70,6 +72,12 @@ const Sidebar = () => {
                 <ListItem button onClick={() => navigate("/notifications")}>
                     <ListItemIcon sx={{ color: "white" }}><NotificationsIcon /></ListItemIcon>
                     <ListItemText primary="Notifications" />
+                </ListItem>
+                <ListItem button onClick={() => navigate("/create")}>
+                    <ListItemIcon sx={{ color: "white" }}>
+                        <AddCircleOutlineIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Create" />
                 </ListItem>
                 <ListItem button onClick={() => navigate("/profile")}>
                     <ListItemIcon sx={{ color: "white" }}><AccountCircleIcon /></ListItemIcon>
