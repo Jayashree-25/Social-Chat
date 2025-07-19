@@ -1,8 +1,13 @@
 import React, { useState } from "react";
+import { FeedContext } from "../components/FeedContext";
+import { useNavigate } from "react-router-dom";
 
 const CreatePost = () => {
 
     const [images, setImages] = useState([]);
+    const [text, setText] = useState([]);
+    const { addPost } = useContext(FeedContext);
+    const navigate = useNavigate();
 
     const handleImageUpload = (e) => {
         const files = Array.from(e.target.files);
