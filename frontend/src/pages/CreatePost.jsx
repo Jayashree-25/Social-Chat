@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 
 const CreatePost = () => {
+
+    const [images, setImages] = useState([]);
+
+    const handleImageUpload = (e) => {
+        const files = Array.from(e.target.files);
+        const newImages = files.map(file => URL.createObjectURL(file));
+        setImages(newImages);
+    }
+
     return (
         <div
             style={{
@@ -22,84 +31,95 @@ const CreatePost = () => {
                     padding: "2rem",
                     width: "95%",
                     maxWidth: "1300px",
-                    height: "600px", 
+                    height: "600px",
                     boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
                     border: "1px solid rgba(255, 255, 255, 0.3)",
                 }}
             >
                 {/* Top Content Area */}
-                <div style={{ display: "flex", gap: "2rem", flex: 1 }}>
+                <div style={{ display: "flex", gap: "2rem", flex: 1, flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                     {/* Left: Image Upload */}
-                    <div
-                        style={{
-                            flex: 1,
-                            background: "rgba(255, 255, 255, 0.3)",
-                            border: "2px dashed rgba(255, 255, 255, 0.6)",
-                            borderRadius: "10px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: "#1e3a8a",
-                            fontWeight: "bold",
-                            cursor: "pointer",
-                            minHeight: "100%",
-                        }}
-                    >
-                        + Add Image
+                    <label htmlFor="imageUpload" style={{
+                        cursor: "pointer",
+                        padding: "10px 20px",
+                        border: "2px dashed #000",
+                        borderRadius: "10px",
+                        color: "#000",
+                        marginBottom: "20px",
+                        textAlign: "center"
+                    }}>
+                        Click to Add Images
+                    </label>
+                    <input
+                        id="imageUpload"
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={handleImageUpload}
+                    />
+
+                    <div style={{
+                        display: "flex",
+                        overflowX: "auto",
+                        gap: "10px",
+                        // padding: "5px",
+                        width: "100%",
+                        maxHeight: "300px"
+                    }}>
+                        {images.map((imgSrc, index) => (
+                            <img
+                                key={index}
+                                src={imgSrc}
+                                alt={`uploaded-${index}`}
+                                style={{ height: "150px", borderRadius: "10px" }}
+                            />
+                        ))}
                     </div>
 
-                    {/* Right: Inputs */}
+                    {/* Down: Inputs */}
                     <div
                         style={{
                             flex: 2,
                             display: "flex",
                             flexDirection: "column",
                             justifyContent: "space-between",
+                            padding: "10px",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            width: "40%"
                         }}
                     >
-                        <input
-                            type="text"
-                            placeholder="Post Title"
-                            style={{
-                                padding: "0.8rem",
-                                borderRadius: "8px",
-                                border: "1px solid rgba(0,0,0,0.1)",
-                                outline: "none",
-                                fontSize: "1rem",
-                                marginBottom: "1rem",
-                            }}
-                        />
-                        <textarea
-                            placeholder="What's on your mind?"
-                            style={{
-                                flexGrow: 1,
-                                padding: "0.8rem",
-                                borderRadius: "8px",
-                                border: "1px solid rgba(0,0,0,0.1)",
-                                outline: "none",
-                                resize: "none",
-                                fontSize: "1rem",
-                            }}
-                        />
-                    </div>
-                </div>
 
-                {/* Bottom: Post Button */}
-                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1.5rem" }}>
-                    <button
-                        style={{
-                            padding: "0.8rem 1.5rem",
-                            borderRadius: "8px",
-                            backgroundColor: "#2563eb",
-                            color: "white",
+                        <textarea
+                            placeholder="Write your post..."
+                            style={{
+                                height: "80%",
+                                borderRadius: "10px",
+                                padding: "15px",
+                                resize: "none",
+                                border: "none",
+                                fontSize: "16px",
+                                backgroundColor: "rgba(231, 214, 233, 0.72)",
+                                color: "#000",
+                                outline: "none"
+                            }}
+                        />
+
+                        <button style={{
+                            padding: "10px 25px",
+                            backgroundColor: "#ffffff55",
                             border: "none",
+                            borderRadius: "10px",
                             fontWeight: "bold",
-                            fontSize: "1rem",
+                            color: "#000",
                             cursor: "pointer",
-                        }}
-                    >
-                        Post
-                    </button>
+                            alignSelf: "flex-end",
+                            marginTop: "10px"
+                        }}>
+                            Post
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
