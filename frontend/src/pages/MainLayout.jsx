@@ -22,6 +22,7 @@ const MainLayout = () => {
                         <div
                             key={post.id}
                             style={{
+                                position: "relative",
                                 border: "1px solid #ccc",
                                 padding: "1rem",
                                 marginBottom: "1rem",
@@ -59,14 +60,14 @@ const MainLayout = () => {
                                 Delete
                             </button>
                         </div>
-                    ))
+            ))
                 )}
-            </div>
+        </div>
 
-            {/* Right Chat Area */}
-            <div style={{ width: "20%", background: "#f9f9f9", padding: "20px", height: "100vh", overflow: "auto", borderLeft: "1px solid #ddd" }}>
-                <p>Chat goes here...</p>
-            </div>
+            {/* Right Chat Area */ }
+    <div style={{ width: "20%", background: "#f9f9f9", padding: "20px", height: "100vh", overflow: "auto", borderLeft: "1px solid #ddd" }}>
+        <p>Chat goes here...</p>
+    </div>
         </div >
     );
 };
