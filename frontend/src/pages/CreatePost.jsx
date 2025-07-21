@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { FeedContext } from "../components/FeedContext";
 import { useNavigate } from "react-router-dom";
 
@@ -13,6 +13,18 @@ const CreatePost = () => {
         const files = Array.from(e.target.files);
         const newImages = files.map(file => URL.createObjectURL(file));
         setImages(newImages);
+    }
+
+    const handlePost = () => {
+        if (text.trim === "" && images.length === 0) return;
+
+        const newPost = {
+            text,
+            images,
+            timestamp: new Date().toISOString(),
+        };
+        addPost(newPost);
+        navigate("/home");
     }
 
     return (
@@ -97,6 +109,8 @@ const CreatePost = () => {
                     >
 
                         <textarea
+                            value={text}
+                            onChange={(e) => setText(e.target.value)}
                             placeholder="Write your post..."
                             style={{
                                 height: "80%",
@@ -111,17 +125,19 @@ const CreatePost = () => {
                             }}
                         />
 
-                        <button style={{
-                            padding: "10px 25px",
-                            backgroundColor: "#ffffff55",
-                            border: "none",
-                            borderRadius: "10px",
-                            fontWeight: "bold",
-                            color: "#000",
-                            cursor: "pointer",
-                            alignSelf: "flex-end",
-                            marginTop: "10px"
-                        }}>
+                        <button
+                            onClick={handlePost}
+                            style={{
+                                padding: "10px 25px",
+                                backgroundColor: "#ffffff55",
+                                border: "none",
+                                borderRadius: "10px",
+                                fontWeight: "bold",
+                                color: "#000",
+                                cursor: "pointer",
+                                alignSelf: "flex-end",
+                                marginTop: "10px"
+                            }}>
                             Post
                         </button>
                     </div>
