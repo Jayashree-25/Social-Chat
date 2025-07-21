@@ -7,7 +7,7 @@ import { IconButton } from "@mui/material";
 
 const MainLayout = () => {
     const { currentUser } = useContext(UserContext);
-    const { posts } = useContext(FeedContext);
+    const { posts, deletePost } = useContext(FeedContext);
 
     return (
         <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
@@ -40,6 +40,24 @@ const MainLayout = () => {
                                     />
                                 ))}
                             </div>
+
+                            {/* Delete Button */}
+                            <button
+                                onClick={() => deletePost(post.id)}
+                                style={{
+                                    position: "absolute",
+                                    top: "10px",
+                                    right: "10px",
+                                    backgroundColor: "#f44336",
+                                    color: "white",
+                                    border: "none",
+                                    padding: "5px 10px",
+                                    borderRadius: "5px",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                Delete
+                            </button>
                         </div>
                     ))
                 )}
@@ -49,7 +67,7 @@ const MainLayout = () => {
             <div style={{ width: "20%", background: "#f9f9f9", padding: "20px", height: "100vh", overflow: "auto", borderLeft: "1px solid #ddd" }}>
                 <p>Chat goes here...</p>
             </div>
-        </div>
+        </div >
     );
 };
 

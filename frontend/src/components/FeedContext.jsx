@@ -7,8 +7,12 @@ export const FeedProvider = ({ children }) => {
         setPosts(prev => [newPost, ...prev]);
     }
 
+    const deletePost = (id) => {
+        setPosts((prevPosts) => prevPosts.filter((posts) => posts.id != id));
+    }
+
     return (
-        <FeedContext.Provider value={{ posts, addPost }}>
+        <FeedContext.Provider value={{ posts, addPost, deletePost }}>
             {children}
         </FeedContext.Provider>
     );
