@@ -22,23 +22,49 @@ const MainLayout = () => {
                         <div
                             key={post.id}
                             style={{
-                                position: "relative",
                                 border: "1px solid #ccc",
-                                padding: "1rem",
-                                marginBottom: "1rem",
-                                borderRadius: "10px",
-                                background: "#fff"
+                                padding: "1.2rem",
+                                marginBottom: "1.8rem",
+                                borderRadius: "15px",
+                                background: "#fff",
+                                position: "relative",
+                                maxWidth: "700px",
+                                width: "100%",
+                                marginInline: "auto",
+                                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
                             }}
                         >
-                            <p>{post.text}</p>
-                            <div style={{ display: "flex", gap: "10px", overflowX: "auto" }}>
+                            <p style={{ fontSize: "1rem", marginBottom: "1rem" }}>{post.text}</p>
+
+                            {/* Square Image Grid */}
+                            <div
+                                style={{
+                                    display: "grid",
+                                    gridTemplateColumns: "repeat(3, 1fr)",
+                                    gap: "10px"
+                                }}
+                            >
                                 {post.images?.map((imgSrc, i) => (
-                                    <img
+                                    <div
                                         key={i}
-                                        src={imgSrc}
-                                        alt={`uploaded-${i}`}
-                                        style={{ height: "100px", borderRadius: "10px" }}
-                                    />
+                                        style={{
+                                            width: "100%",
+                                            aspectRatio: "1",
+                                            overflow: "hidden",
+                                            borderRadius: "10px",
+                                            backgroundColor: "#eee"
+                                        }}
+                                    >
+                                        <img
+                                            src={imgSrc}
+                                            alt={`uploaded-${i}`}
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "cover"
+                                            }}
+                                        />
+                                    </div>
                                 ))}
                             </div>
 
@@ -60,15 +86,24 @@ const MainLayout = () => {
                                 Delete
                             </button>
                         </div>
-            ))
+                    ))
                 )}
-        </div>
+            </div>
 
-            {/* Right Chat Area */ }
-    <div style={{ width: "20%", background: "#f9f9f9", padding: "20px", height: "100vh", overflow: "auto", borderLeft: "1px solid #ddd" }}>
-        <p>Chat goes here...</p>
-    </div>
-        </div >
+            {/* Right Chat Area */}
+            <div
+                style={{
+                    width: "20%",
+                    background: "#f9f9f9",
+                    padding: "20px",
+                    height: "100vh",
+                    overflow: "auto",
+                    borderLeft: "1px solid #ddd"
+                }}
+            >
+                <p>Chat goes here...</p>
+            </div>
+        </div>
     );
 };
 
