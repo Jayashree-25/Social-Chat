@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { UserContext } from "../components/UserWrapper";
 import Sidebar from "../components/Sidebar";
 import FeedContext from "../components/FeedContext";
+import Carousel from "../components/Carousel"; // ✅ Added carousel import
 import AddIcon from "@mui/icons-material/Add";
 import { IconButton } from "@mui/material";
 
@@ -42,21 +43,21 @@ const MainLayout = () => {
                                 position: "relative",
                             }}
                         >
-                            {/* Top Image */}
-                            {post.images?.[0] && (
-                                <div style={{ width: "100%", height: "300px", overflow: "hidden" }}>
-                                    <img
-                                        src={post.images[0]}
-                                        alt="Post"
-                                        style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            objectFit: "cover",
-                                            display: "block",
-                                        }}
-                                    />
-                                </div>
-                            )}
+                            {/* Post Image or Carousel */}
+                            {post.images?.length > 1 ? (
+                                <Carousel images={post.images} />
+                            ) : post.images?.length === 1 ? (
+                                <img
+                                    src={post.images[0]}
+                                    alt="Post"
+                                    style={{
+                                        width: "100%",
+                                        height: "300px",
+                                        objectFit: "cover",
+                                        display: "block"
+                                    }}
+                                />
+                            ) : null}
 
                             {/* Text Content */}
                             <div style={{ padding: "1.2rem" }}>
