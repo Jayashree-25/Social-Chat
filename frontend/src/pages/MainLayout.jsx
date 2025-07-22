@@ -14,7 +14,17 @@ const MainLayout = () => {
             <Sidebar />
 
             {/* Middle Feed */}
-            <div style={{ flex: 1, padding: "20px", overflowY: "auto", height: "100vh", position: "relative" }}>
+            <div style={{
+                flex: 1,
+                overflowY: "auto",
+                height: "100vh",
+                position: "relative",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                padding: "20px",
+                backgroundColor: "#f5f5f5",
+            }}>
                 {posts.length === 0 ? (
                     <p>No posts yet...</p>
                 ) : (
@@ -22,50 +32,65 @@ const MainLayout = () => {
                         <div
                             key={post.id}
                             style={{
-                                border: "1px solid #ccc",
-                                padding: "1.2rem",
-                                marginBottom: "1.8rem",
-                                borderRadius: "15px",
-                                background: "#fff",
-                                position: "relative",
-                                maxWidth: "700px",
                                 width: "100%",
-                                marginInline: "auto",
-                                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                                maxWidth: "600px",
+                                marginBottom: "2rem",
+                                borderRadius: "12px",
+                                overflow: "hidden",
+                                backgroundColor: "#fff",
+                                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                                position: "relative",
                             }}
                         >
-                            <p style={{ fontSize: "1rem", marginBottom: "1rem" }}>{post.text}</p>
-
-                            {/* Square Image Grid */}
-                            <div
-                                style={{
-                                    display: "grid",
-                                    gridTemplateColumns: "repeat(3, 1fr)",
-                                    gap: "10px"
-                                }}
-                            >
-                                {post.images?.map((imgSrc, i) => (
-                                    <div
-                                        key={i}
+                            {/* Top Image */}
+                            {post.images?.[0] && (
+                                <div style={{ width: "100%", height: "300px", overflow: "hidden" }}>
+                                    <img
+                                        src={post.images[0]}
+                                        alt="Post"
                                         style={{
                                             width: "100%",
-                                            aspectRatio: "1",
-                                            overflow: "hidden",
-                                            borderRadius: "10px",
-                                            backgroundColor: "#eee"
+                                            height: "100%",
+                                            objectFit: "cover",
+                                            display: "block",
                                         }}
-                                    >
-                                        <img
-                                            src={imgSrc}
-                                            alt={`uploaded-${i}`}
-                                            style={{
-                                                width: "100%",
-                                                height: "100%",
-                                                objectFit: "cover"
-                                            }}
-                                        />
-                                    </div>
-                                ))}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Text Content */}
+                            <div style={{ padding: "1.2rem" }}>
+                                <p style={{ fontSize: "0.95rem", color: "#444", lineHeight: "1.5" }}>
+                                    {post.text}
+                                </p>
+
+                                {/* Like & Comment buttons */}
+                                <div style={{
+                                    marginTop: "1rem",
+                                    display: "flex",
+                                    gap: "1.5rem",
+                                    alignItems: "center",
+                                    fontSize: "0.95rem"
+                                }}>
+                                    <button style={{
+                                        background: "none",
+                                        border: "none",
+                                        color: "#1976d2",
+                                        cursor: "pointer",
+                                        fontWeight: "500"
+                                    }}>
+                                        👍 Like
+                                    </button>
+                                    <button style={{
+                                        background: "none",
+                                        border: "none",
+                                        color: "#1976d2",
+                                        cursor: "pointer",
+                                        fontWeight: "500"
+                                    }}>
+                                        💬 Comment
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Delete Button */}

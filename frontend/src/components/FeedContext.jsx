@@ -1,21 +1,36 @@
-import React, { Children, createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 
 export const FeedContext = createContext();
+
 export const FeedProvider = ({ children }) => {
-    const [posts, setPosts] = useState([]);
-    const addPost = (newPost) => {
-        setPosts(prev => [newPost, ...prev]);
-    }
+  const [posts, setPosts] = useState([]);
 
-    const deletePost = (id) => {
-        setPosts((prevPosts) => prevPosts.filter((posts) => posts.id != id));
+  // Load posts from localStorage on initial mount
+  useEffect(() => {
+    const storedPosts = localStorage.getItem("posts");
+    if (storedPosts) {
+      setPosts(JSON.parse(storedPosts));
     }
+  }, []);
 
-    return (
-        <FeedContext.Provider value={{ posts, addPost, deletePost }}>
-            {children}
-        </FeedContext.Provider>
-    );
-}
+  // Save posts to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("posts", JSON.stringify(posts));
+  }, [posts]);
+
+  const addPost = (newPost) => {
+    setPosts((prev) => [newPost, ...prev]);
+  };
+
+  const deletePost = (id) => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+  };
+
+  return (
+    <FeedContext.Provider value={{ posts, addPost, deletePost }}>
+      {children}
+    </FeedContext.Provider>
+  );
+};
 
 export default FeedContext;
