@@ -6,7 +6,6 @@ export const FeedContext = createContext();
 export const FeedProvider = ({ children }) => {
   const [posts, setPosts] = useState([]);
 
-  // Load posts from localStorage on mount
   useEffect(() => {
     const username = localStorage.getItem("username");
     if (!username) return;
@@ -26,7 +25,6 @@ export const FeedProvider = ({ children }) => {
     }
   }, []);
 
-  // Save posts to localStorage whenever they change
   useEffect(() => {
     const username = localStorage.getItem("username");
     if (username) {
@@ -38,8 +36,9 @@ export const FeedProvider = ({ children }) => {
     const completePost = {
       ...newPost,
       id: newPost.id || Date.now().toString(),
-      likes: [],
-      comments: [],
+      likes: newPost.likes || [],
+      comments: newPost.comments || [],
+      username: newPost.username || localStorage.getItem("username"),
     };
     setPosts((prevPosts) => [completePost, ...prevPosts]);
   };
@@ -68,14 +67,24 @@ export const FeedProvider = ({ children }) => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId ? { ...post, likes: response.data.likes } : post
-        )
-      );
-      console.log("Like successful, updated likes:", response.data.likes);
+      console.log("API Response:", response.data);
+      if (response.data.likes && Array.isArray(response.data.likes)) {
+        // Update state if likes array is present
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === postId ? { ...post, likes: response.data.likes } : post
+          )
+        );
+        console.log("Like state updated with likes:", response.data.likes);
+      } else {
+        console.error("Like operation failed, no valid likes array in response");
+      }
     } catch (err) {
-      console.error("Like failed:", err.response?.data || err.message);
+      console.error("Like failed:", {
+        message: err.message,
+        status: err.response?.status,
+        data: err.response?.data,
+      });
     }
   };
 
