@@ -1,67 +1,87 @@
 import React, { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
 export const FeedContext = createContext();
 
 export const FeedProvider = ({ children }) => {
-    const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]);
 
-    useEffect(() => {
-        const storedPosts = localStorage.getItem("posts");
-        if (storedPosts) {
-            try {
-                const parsed = JSON.parse(storedPosts);
-                const validPosts = parsed.filter(
-                    (post) => post && post.id && Array.isArray(post.likes)
-                );
-                setPosts(validPosts);
-                console.log("Loaded posts:", validPosts);
-            } catch (error) {
-                console.error("Error parsing posts from localStorage:", error);
-                setPosts([]);
-            }
-        }
-    }, []);
+  // Load posts from localStorage on mount
+  useEffect(() => {
+    const username = localStorage.getItem("username");
+    if (!username) return;
 
-    useEffect(() => {
-        localStorage.setItem("posts", JSON.stringify(posts));
-    }, [posts]);
-
-    const addPost = (newPost) => {
-        const completePost = {
-            ...newPost,
-            id: newPost.id || Date.now().toString(),
-            likes: [],
-            comments: [],
-        };
-        setPosts((prevPosts) => [completePost, ...prevPosts]);
-    };
-
-    const deletePost = (id) => {
-        setPosts((prev) => prev.filter((post) => post.id !== id));
-    };
-
-    const likePost = (postId, username) => {
-        setPosts((prevPosts) =>
-            prevPosts.map((post) => {
-                const postIdStr = String(post.id); // Ensure consistent ID type
-                const inputIdStr = String(postId);
-                if (postIdStr === inputIdStr) {
-                    const likesArray = Array.isArray(post.likes) ? post.likes : [];
-                    const isLiked = likesArray.includes(username);
-                    const updatedLikes = isLiked
-                        ? likesArray.filter((user) => user !== username)
-                        : [...likesArray, username];
-
-                    return { ...post, likes: updatedLikes };
-                }
-                return post;
-            })
+    const storedPosts = localStorage.getItem(`posts_${username}`);
+    if (storedPosts) {
+      try {
+        const parsed = JSON.parse(storedPosts);
+        const validPosts = parsed.filter(
+          (post) => post && post.id && Array.isArray(post.likes)
         );
-    };
+        setPosts(validPosts);
+      } catch (error) {
+        console.error("Error parsing posts from localStorage:", error);
+        setPosts([]);
+      }
+    }
+  }, []);
 
-    return (
-        <FeedContext.Provider value={{ posts, addPost, likePost, deletePost }}>
-            {children}
-        </FeedContext.Provider>
-    );
+  // Save posts to localStorage whenever they change
+  useEffect(() => {
+    const username = localStorage.getItem("username");
+    if (username) {
+      localStorage.setItem(`posts_${username}`, JSON.stringify(posts));
+    }
+  }, [posts]);
+
+  const addPost = (newPost) => {
+    const completePost = {
+      ...newPost,
+      id: newPost.id || Date.now().toString(),
+      likes: [],
+      comments: [],
+    };
+    setPosts((prevPosts) => [completePost, ...prevPosts]);
+  };
+
+  const deletePost = (id) => {
+    setPosts((prev) => prev.filter((post) => post.id !== id));
+  };
+
+  const likePost = async (postId, username) => {
+    if (!username) {
+      console.warn("No username provided for like");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.warn("No token available");
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/posts/${postId}/like`,
+        { username },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId ? { ...post, likes: response.data.likes } : post
+        )
+      );
+      console.log("Like successful, updated likes:", response.data.likes);
+    } catch (err) {
+      console.error("Like failed:", err.response?.data || err.message);
+    }
+  };
+
+  return (
+    <FeedContext.Provider value={{ posts, addPost, likePost, deletePost }}>
+      {children}
+    </FeedContext.Provider>
+  );
 };
