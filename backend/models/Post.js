@@ -11,7 +11,18 @@ const postSchema = new mongoose.Schema({
     lowercase: true,
   }],
   comments: [{
-    type: String,
+    user: {
+      type: String,
+      required: true,
+    },
+    text: {
+      type: String,
+      required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
   }],
   username: {
     type: String, 
