@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../components/UserWrapper";
 import Sidebar from "../components/Sidebar";
 import { FeedContext } from "../components/FeedContext";
@@ -7,6 +7,7 @@ import Carousel from "../components/Carousel";
 const MainLayout = () => {
     const { currentUser, loading, error } = useContext(UserContext);
     const { posts, deletePost, likePost } = useContext(FeedContext);
+    const [commentText, setCommentText] = useState("");
 
     useEffect(() => {
         console.log("MainLayout currentUser:", currentUser);
@@ -24,6 +25,12 @@ const MainLayout = () => {
         }
         likePost(postId, currentUser.username);
     };
+
+    const handleCommentSubmit = (postId) => {
+        if (!commentText.trim()) return;
+        addComment(postId, currentUser.username, commentText);
+        setCommentText("");
+    }
 
     const currentUsername = currentUser?.username?.toLowerCase();
 
@@ -82,6 +89,7 @@ const MainLayout = () => {
                                         >
                                             {hasLiked ? "❤️ Liked" : "👍 Like"}
                                         </button>
+
                                         <button
                                             style={{
                                                 border: "none",
@@ -102,8 +110,65 @@ const MainLayout = () => {
                                                 : `${likeCount} ${likeCount === 1 ? "person" : "people"} liked this`}
                                         </p>
                                     )}
+
+                                    {/* Comment Section */}
+                                    <div style={{ marginTop: "1rem" }}>
+                                        <h4 style={{ fontSize: "1rem", color: "#333" }}>
+                                            Comment
+                                        </h4>
+                                        {post.comments && post.comments.length > 0 ? (
+                                            post.comments.map((comment, index) => (
+                                                <div
+                                                    key={index}
+                                                    style={{
+                                                        backgroundColor: "#f0f0f0",
+                                                        padding: "0.5rem",
+                                                        marginBottom: "0.5rem",
+                                                        borderRadius: "5px",
+                                                    }}
+                                                >
+                                                    <strong>{comment.user}</strong>: {comment.text} <br />
+                                                    <small style={{ color: "#666" }}>
+                                                        {new Date(comment.createdAt).toLocaleString()}
+                                                    </small>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p>No comments yet.</p>
+                                        )}
+                                        <div style={{ marginTop: "0.5rem" }}>
+                                            <input
+                                                type="text"
+                                                value={commentText}
+                                                onChange={(e) => setCommentText(e.target.value)}
+                                                placeholder="Add a comment..."
+                                                style={{
+                                                    width: "100%",
+                                                    padding: "0.5rem",
+                                                    marginBottom: "0.5rem",
+                                                    borderRadius: "5px",
+                                                    border: "1px solid #ddd",
+                                                }}
+                                            />
+                                            <button
+                                                onClick={() => handleCommentSubmit(post.id)}
+                                                style={{
+                                                    backgroundColor: "#1976d2",
+                                                    color: "white",
+                                                    border: "none",
+                                                    padding: "0.5rem 1rem",
+                                                    borderRadius: "5px",
+                                                    cursor: "pointer",
+                                                }}
+                                            >
+                                                Post Comment
+                                            </button>
+                                            
+                                        </div>
+                                    </div>
                                 </div>
-                                {(post.username?.toLowerCase() === currentUsername || true) && ( // Temporary fallback for testing
+
+                                {(post.username?.toLowerCase() === currentUsername || true) && (
                                     <button
                                         onClick={() => deletePost(post.id)}
                                         style={{
