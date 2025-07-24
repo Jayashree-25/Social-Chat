@@ -6,7 +6,7 @@ import Carousel from "../components/Carousel";
 
 const MainLayout = () => {
     const { currentUser, loading, error } = useContext(UserContext);
-    const { posts, deletePost, likePost } = useContext(FeedContext);
+    const { posts, deletePost, likePost, addComment } = useContext(FeedContext);
     const [commentText, setCommentText] = useState("");
 
     useEffect(() => {
@@ -27,10 +27,17 @@ const MainLayout = () => {
     };
 
     const handleCommentSubmit = (postId) => {
-        if (!commentText.trim()) return;
+        if (!commentText.trim()) {
+            console.warn("Comment text is empty");
+            return;
+        }
+        if (!currentUser?.username) {
+            console.error("User not logged in, cannot comment");
+            return;
+        }
         addComment(postId, currentUser.username, commentText);
-        setCommentText("");
-    }
+        setCommentText(""); 
+    };
 
     const currentUsername = currentUser?.username?.toLowerCase();
 
@@ -89,7 +96,6 @@ const MainLayout = () => {
                                         >
                                             {hasLiked ? "❤️ Liked" : "👍 Like"}
                                         </button>
-
                                         <button
                                             style={{
                                                 border: "none",
@@ -113,9 +119,7 @@ const MainLayout = () => {
 
                                     {/* Comment Section */}
                                     <div style={{ marginTop: "1rem" }}>
-                                        <h4 style={{ fontSize: "1rem", color: "#333" }}>
-                                            Comment
-                                        </h4>
+                                        <h4 style={{ fontSize: "1rem", color: "#333" }}>Comments</h4>
                                         {post.comments && post.comments.length > 0 ? (
                                             post.comments.map((comment, index) => (
                                                 <div
@@ -163,7 +167,6 @@ const MainLayout = () => {
                                             >
                                                 Post Comment
                                             </button>
-                                            
                                         </div>
                                     </div>
                                 </div>

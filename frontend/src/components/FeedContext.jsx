@@ -69,7 +69,6 @@ export const FeedProvider = ({ children }) => {
       );
       console.log("API Response:", response.data);
       if (response.data.likes && Array.isArray(response.data.likes)) {
-        // Update state if likes array is present
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
             post.id === postId ? { ...post, likes: response.data.likes } : post
@@ -88,8 +87,48 @@ export const FeedProvider = ({ children }) => {
     }
   };
 
+  const addComment = async (postId, username, text) => {
+    if (!username || !text) {
+      console.warn("Username and text are required for comment");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.warn("No token available");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/posts/${postId}/comment`,
+        { username, text },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log("API Response for comment:", response.data);
+      if (response.data.comments && Array.isArray(response.data.comments)) {
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === postId ? { ...post, comments: response.data.comments } : post
+          )
+        );
+        console.log("Comment state updated with comments:", response.data.comments);
+      } else {
+        console.error("Comment operation failed, no valid comments array in response");
+      }
+    } catch (err) {
+      console.error("Comment failed:", {
+        message: err.message,
+        status: err.response?.status,
+        data: err.response?.data,
+      });
+    }
+  };
+
   return (
-    <FeedContext.Provider value={{ posts, addPost, likePost, deletePost }}>
+    <FeedContext.Provider value={{ posts, addPost, likePost, deletePost, addComment }}>
       {children}
     </FeedContext.Provider>
   );

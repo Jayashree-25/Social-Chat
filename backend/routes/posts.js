@@ -45,21 +45,24 @@ router.post("/:postId/comment", async (req, res) => {
   const { username, text } = req.body;
   const { postId } = req.params;
 
+  console.log("Received comment request - body:", req.body); // Debug log
   if (!username || !text) return res.status(400).json({ message: "Username and text are required" });
 
   try {
-    let post = post.findOne({ id: postId });
+    let post = await Post.findOne({ id: postId });
+    console.log("Found post:", post); // Debug log
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    post.comment.push({ user: username, text });
+    post.comments.push({ user: username, text });
+    console.log("Post before save:", post); // Debug log
     await post.save();
     console.log(`User ${username} commented on post ${postId}, comments:`, post.comments);
     res.json({ comments: post.comments });
   } catch (err) {
-    console.error("Comment operation error:", err);
+    console.error("Comment operation error:", err); // Full error log
     res.status(500).json({ message: "Server error", error: err.message });
   }
-})
+});
 
 export default router;
