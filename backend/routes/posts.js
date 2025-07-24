@@ -13,7 +13,7 @@ router.put("/:postId/like", async (req, res) => {
     let post = await Post.findOne({ id: postId });
     if (!post) {
       console.log(`Post ${postId} not found, creating new post`);
-      post = new Post({ id: postId, likes: [], username }); 
+      post = new Post({ id: postId, likes: [], username });
       await post.save();
     } else {
       console.log(`Found post ${postId}, likes before update:`, post.likes);
@@ -40,5 +40,26 @@ router.put("/:postId/like", async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
+
+router.post("/:postId/comment", async (req, res) => {
+  const { username, text } = req.body;
+  const { postId } = req.params;
+
+  if (!username || !text) return res.status(400).json({ message: "Username and text are required" });
+
+  try {
+    let post = post.findOne({ id: postId });
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    post.comment.push({ user: username, text });
+    await post.save();
+    console.log(`User ${username} commented on post ${postId}, comments:`, post.comments);
+    res.json({ comments: post.comments });
+  } catch (err) {
+    console.error("Comment operation error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+})
 
 export default router;
