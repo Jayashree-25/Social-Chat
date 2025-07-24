@@ -36,7 +36,7 @@ const MainLayout = () => {
             return;
         }
         addComment(postId, currentUser.username, commentText);
-        setCommentText(""); 
+        setCommentText(""); // Clear input after submission
     };
 
     const currentUsername = currentUser?.username?.toLowerCase();
@@ -50,10 +50,12 @@ const MainLayout = () => {
                     overflowY: "auto",
                     padding: "20px",
                     backgroundColor: "#f5f5f5",
+                    maxWidth: "800px",
+                    margin: "0 auto",
                 }}
             >
                 {posts.length === 0 ? (
-                    <p>No posts yet...</p>
+                    <p style={{ textAlign: "center", color: "#666" }}>No posts yet...</p>
                 ) : (
                     posts.map((post) => {
                         const likeList = post.likes?.map((u) => u.toLowerCase()) || [];
@@ -64,11 +66,12 @@ const MainLayout = () => {
                             <div
                                 key={post.id}
                                 style={{
-                                    maxWidth: "600px",
-                                    margin: "0 auto 2rem",
+                                    maxWidth: "100%",
+                                    marginBottom: "2rem",
                                     backgroundColor: "#fff",
                                     borderRadius: "12px",
-                                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                                    overflow: "hidden",
                                     position: "relative",
                                 }}
                             >
@@ -78,37 +81,54 @@ const MainLayout = () => {
                                     <img
                                         src={post.images[0]}
                                         alt="Post"
-                                        style={{ width: "100%", height: "300px", objectFit: "cover" }}
+                                        style={{
+                                            width: "100%",
+                                            height: "300px",
+                                            objectFit: "cover",
+                                            borderTopLeftRadius: "12px",
+                                            borderTopRightRadius: "12px",
+                                        }}
                                     />
                                 ) : null}
-                                <div style={{ padding: "1.2rem" }}>
-                                    <p style={{ fontSize: "0.95rem", color: "#444" }}>{post.text || "No text"}</p>
-                                    <div style={{ display: "flex", gap: "1.5rem", marginTop: "1rem" }}>
+                                <div style={{ padding: "1.5rem" }}>
+                                    <p style={{ fontSize: "1rem", color: "#333", lineHeight: "1.5" }}>
+                                        {post.text || "No text"}
+                                    </p>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            gap: "1.5rem",
+                                            marginTop: "1.5rem",
+                                            flexWrap: "wrap",
+                                        }}
+                                    >
                                         <button
                                             onClick={() => handleLike(post.id)}
                                             style={{
                                                 border: "none",
-                                                background: "none",
-                                                color: hasLiked ? "#d32f2f" : "#1976d2",
+                                                background: "linear-gradient(to right, #4CAF50, #1976d2)", // Green to blue gradient
+                                                color: "white",
                                                 fontWeight: "bold",
                                                 cursor: "pointer",
+                                                padding: "0.5rem 1rem",
+                                                borderRadius: "5px",
+                                                transition: "background 0.3s",
                                             }}
+                                            onMouseOver={(e) => (e.target.style.background = "linear-gradient(to right, #388E3C, #1565c0)")} // Darker green to blue
+                                            onMouseOut={(e) => (e.target.style.background = "linear-gradient(to right, #4CAF50, #1976d2)")}
                                         >
                                             {hasLiked ? "❤️ Liked" : "👍 Like"}
                                         </button>
-                                        <button
-                                            style={{
-                                                border: "none",
-                                                background: "none",
-                                                color: "#1976d2",
-                                                cursor: "pointer",
-                                            }}
-                                        >
-                                            💬 Comment
-                                        </button>
+                                        {/* Removed the redundant Comment button */}
                                     </div>
                                     {likeCount > 0 && (
-                                        <p style={{ marginTop: "0.5rem", color: "#666", fontSize: "0.85rem" }}>
+                                        <p
+                                            style={{
+                                                marginTop: "0.75rem",
+                                                color: "#666",
+                                                fontSize: "0.9rem",
+                                            }}
+                                        >
                                             {hasLiked
                                                 ? likeCount === 1
                                                     ? "You liked this"
@@ -118,52 +138,62 @@ const MainLayout = () => {
                                     )}
 
                                     {/* Comment Section */}
-                                    <div style={{ marginTop: "1rem" }}>
-                                        <h4 style={{ fontSize: "1rem", color: "#333" }}>Comments</h4>
+                                    <div style={{ marginTop: "1.5rem" }}>
+                                        <h4 style={{ fontSize: "1.1rem", color: "#333", marginBottom: "1rem" }}>
+                                            Comments
+                                        </h4>
                                         {post.comments && post.comments.length > 0 ? (
                                             post.comments.map((comment, index) => (
                                                 <div
                                                     key={index}
                                                     style={{
-                                                        backgroundColor: "#f0f0f0",
-                                                        padding: "0.5rem",
-                                                        marginBottom: "0.5rem",
-                                                        borderRadius: "5px",
+                                                        backgroundColor: "#f9f9f9",
+                                                        padding: "1rem",
+                                                        marginBottom: "1rem",
+                                                        borderRadius: "8px",
+                                                        borderLeft: "4px solid #1976d2",
                                                     }}
                                                 >
-                                                    <strong>{comment.user}</strong>: {comment.text} <br />
-                                                    <small style={{ color: "#666" }}>
+                                                    <strong style={{ color: "#1976d2" }}>{comment.user}</strong>
+                                                    <span style={{ color: "#555", marginLeft: "0.5rem" }}>:</span>{" "}
+                                                    {comment.text}
+                                                    <br />
+                                                    <small style={{ color: "#888" }}>
                                                         {new Date(comment.createdAt).toLocaleString()}
                                                     </small>
                                                 </div>
                                             ))
                                         ) : (
-                                            <p>No comments yet.</p>
+                                            <p style={{ color: "#888", fontStyle: "italic" }}>No comments yet.</p>
                                         )}
-                                        <div style={{ marginTop: "0.5rem" }}>
+                                        <div style={{ marginTop: "1rem", display: "flex", gap: "1rem" }}>
                                             <input
                                                 type="text"
                                                 value={commentText}
                                                 onChange={(e) => setCommentText(e.target.value)}
                                                 placeholder="Add a comment..."
                                                 style={{
-                                                    width: "100%",
-                                                    padding: "0.5rem",
-                                                    marginBottom: "0.5rem",
-                                                    borderRadius: "5px",
+                                                    flex: 1,
+                                                    padding: "0.75rem",
                                                     border: "1px solid #ddd",
+                                                    borderRadius: "5px",
+                                                    fontSize: "0.95rem",
                                                 }}
                                             />
                                             <button
                                                 onClick={() => handleCommentSubmit(post.id)}
                                                 style={{
-                                                    backgroundColor: "#1976d2",
+                                                    background: "linear-gradient(to right, #4CAF50, #1976d2)", // Green to blue gradient
                                                     color: "white",
                                                     border: "none",
-                                                    padding: "0.5rem 1rem",
+                                                    padding: "0.75rem 1.5rem",
                                                     borderRadius: "5px",
                                                     cursor: "pointer",
+                                                    fontSize: "0.95rem",
+                                                    transition: "background 0.3s",
                                                 }}
+                                                onMouseOver={(e) => (e.target.style.background = "linear-gradient(to right, #388E3C, #1565c0)")} // Darker green to blue
+                                                onMouseOut={(e) => (e.target.style.background = "linear-gradient(to right, #4CAF50, #1976d2)")}
                                             >
                                                 Post Comment
                                             </button>
@@ -181,10 +211,13 @@ const MainLayout = () => {
                                             backgroundColor: "#f44336",
                                             color: "white",
                                             border: "none",
-                                            padding: "5px 10px",
+                                            padding: "0.5rem 1rem",
                                             borderRadius: "5px",
                                             cursor: "pointer",
+                                            transition: "background 0.3s",
                                         }}
+                                        onMouseOver={(e) => (e.target.style.background = "#d32f2f")}
+                                        onMouseOut={(e) => (e.target.style.background = "#f44336")}
                                     >
                                         Delete
                                     </button>
@@ -201,6 +234,7 @@ const MainLayout = () => {
                     padding: "20px",
                     borderLeft: "1px solid #ddd",
                     height: "100vh",
+                    overflowY: "auto",
                 }}
             >
                 <p>Chat goes here...</p>
