@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import postsRoutes from "./routes/posts.js";
-import { Server } from "socket.io";
+import { Server } from "socket.io"; // Import socket.io
 
 dotenv.config();
 
@@ -29,22 +29,22 @@ mongoose
     })
     .then(() => {
         console.log("MongoDB connected");
-        app.listen(PORT, () => console.log(`Running at port ${PORT}`));
+        const server = app.listen(PORT, () => console.log(`Running at port ${PORT}`));
 
-        //Initialize socket.io
-        const io = new Server(Server, {
+        // Initialize socket.io after server is created
+        const io = new Server(server, {
             cors: {
-                origin: "http://localhost:5173",
+                origin: "http://localhost:3000", // Adjust to your frontend URL
                 methods: ["GET", "POST"],
             },
         });
 
         io.on("connection", (socket) => {
-            console.log("A user connected", socket.id);
+            console.log("A user connected:", socket.id);
 
             // Handle chat message
             socket.on("sendMessage", (message) => {
-                console.log("Message received: ", message);
+                console.log("Message received:", message);
                 io.emit("receiveMessage", message); // Broadcast to all connected clients
             });
 
