@@ -67,7 +67,7 @@ const MainLayout = () => {
                                 key={post.id}
                                 style={{
                                     maxWidth: "100%",
-                                    marginBottom: "2rem",
+                                    marginBottom: "1.5rem",
                                     backgroundColor: "#fff",
                                     borderRadius: "12px",
                                     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
@@ -83,22 +83,22 @@ const MainLayout = () => {
                                         alt="Post"
                                         style={{
                                             width: "100%",
-                                            height: "300px",
+                                            height: "260px",
                                             objectFit: "cover",
                                             borderTopLeftRadius: "12px",
                                             borderTopRightRadius: "12px",
                                         }}
                                     />
                                 ) : null}
-                                <div style={{ padding: "1.5rem" }}>
+                                <div style={{ padding: "1rem" }}>
                                     <p style={{ fontSize: "1rem", color: "#333", lineHeight: "1.5" }}>
                                         {post.text || "No text"}
                                     </p>
                                     <div
                                         style={{
                                             display: "flex",
-                                            gap: "1.5rem",
-                                            marginTop: "1.5rem",
+                                            gap: "1rem",
+                                            marginTop: "1rem",
                                             flexWrap: "wrap",
                                         }}
                                     >
@@ -106,7 +106,7 @@ const MainLayout = () => {
                                             onClick={() => handleLike(post.id)}
                                             style={{
                                                 border: "none",
-                                                background: "linear-gradient(to right, #4CAF50, #1976d2)", // Green to blue gradient
+                                                background: "linear-gradient(to right, #FF69B4, #FFA500)", // Green to blue gradient
                                                 color: "white",
                                                 fontWeight: "bold",
                                                 cursor: "pointer",
@@ -114,8 +114,8 @@ const MainLayout = () => {
                                                 borderRadius: "5px",
                                                 transition: "background 0.3s",
                                             }}
-                                            onMouseOver={(e) => (e.target.style.background = "linear-gradient(to right, #388E3C, #1565c0)")} // Darker green to blue
-                                            onMouseOut={(e) => (e.target.style.background = "linear-gradient(to right, #4CAF50, #1976d2)")}
+                                            onMouseOver={(e) => (e.target.style.background = "linear-gradient(to right, #FF1493, #FF8C00)")} // Darker green to blue
+                                            onMouseOut={(e) => (e.target.style.background = "linear-gradient(to right, #FF69B4, #FFA500)")}
                                         >
                                             {hasLiked ? "❤️ Liked" : "👍 Like"}
                                         </button>
@@ -124,7 +124,7 @@ const MainLayout = () => {
                                     {likeCount > 0 && (
                                         <p
                                             style={{
-                                                marginTop: "0.75rem",
+                                                marginTop: "0.5rem",
                                                 color: "#666",
                                                 fontSize: "0.9rem",
                                             }}
@@ -139,7 +139,7 @@ const MainLayout = () => {
 
                                     {/* Comment Section */}
                                     <div style={{ marginTop: "1.5rem" }}>
-                                        <h4 style={{ fontSize: "1.1rem", color: "#333", marginBottom: "1rem" }}>
+                                        <h4 style={{ fontSize: "1.1rem", color: "#333", marginBottom: "0.5rem" }}>
                                             Comments
                                         </h4>
                                         {post.comments && post.comments.length > 0 ? (
@@ -148,25 +148,25 @@ const MainLayout = () => {
                                                     key={index}
                                                     style={{
                                                         backgroundColor: "#f9f9f9",
-                                                        padding: "1rem",
-                                                        marginBottom: "1rem",
-                                                        borderRadius: "8px",
-                                                        borderLeft: "4px solid #1976d2",
+                                                        padding: "0.75rem",
+                                                        marginBottom: "0.75rem",
+                                                        borderRadius: "6px",
+                                                        borderLeft: "3px solid #1976d2",
                                                     }}
                                                 >
                                                     <strong style={{ color: "#1976d2" }}>{comment.user}</strong>
-                                                    <span style={{ color: "#555", marginLeft: "0.5rem" }}>:</span>{" "}
+                                                    <span style={{ color: "#555", marginLeft: "0.25rem" }}>:</span>{" "}
                                                     {comment.text}
                                                     <br />
-                                                    <small style={{ color: "#888" }}>
+                                                    <small style={{ color: "#888", fontSize: "0.75rem" }}>
                                                         {new Date(comment.createdAt).toLocaleString()}
                                                     </small>
                                                 </div>
                                             ))
                                         ) : (
-                                            <p style={{ color: "#888", fontStyle: "italic" }}>No comments yet.</p>
+                                            <p style={{ color: "#888", fontStyle: "italic", fontSize: "0.9rem" }}>No comments yet.</p>
                                         )}
-                                        <div style={{ marginTop: "1rem", display: "flex", gap: "1rem" }}>
+                                        <div style={{ marginTop: "1rem", display: "flex", gap: "0.75rem" }}>
                                             <input
                                                 type="text"
                                                 value={commentText}
@@ -174,26 +174,26 @@ const MainLayout = () => {
                                                 placeholder="Add a comment..."
                                                 style={{
                                                     flex: 1,
-                                                    padding: "0.75rem",
+                                                    padding: "0.5rem",
                                                     border: "1px solid #ddd",
-                                                    borderRadius: "5px",
-                                                    fontSize: "0.95rem",
+                                                    borderRadius: "4px",
+                                                    fontSize: "0.9rem",
                                                 }}
                                             />
                                             <button
                                                 onClick={() => handleCommentSubmit(post.id)}
                                                 style={{
-                                                    background: "linear-gradient(to right, #4CAF50, #1976d2)", // Green to blue gradient
+                                                    background: "linear-gradient(to right, #FF0000, #FFFF00)", 
                                                     color: "white",
                                                     border: "none",
-                                                    padding: "0.75rem 1.5rem",
-                                                    borderRadius: "5px",
+                                                    padding: "0.5rem 1rem",
+                                                    borderRadius: "4px",
                                                     cursor: "pointer",
-                                                    fontSize: "0.95rem",
+                                                    fontSize: "0.9rem",
                                                     transition: "background 0.3s",
                                                 }}
-                                                onMouseOver={(e) => (e.target.style.background = "linear-gradient(to right, #388E3C, #1565c0)")} // Darker green to blue
-                                                onMouseOut={(e) => (e.target.style.background = "linear-gradient(to right, #4CAF50, #1976d2)")}
+                                                onMouseOver={(e) => (e.target.style.background = "linear-gradient(to right, #CC0000, #FFD700)")} 
+                                                onMouseOut={(e) => (e.target.style.background = "linear-gradient(to right, #FF0000, #FFFF00)")}
                                             >
                                                 Post Comment
                                             </button>
