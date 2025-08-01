@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import postsRoutes from "./routes/posts.js";
-import { Server } from "socket.io"; // Import socket.io
+import { Server } from "socket.io"; 
 
 dotenv.config();
 

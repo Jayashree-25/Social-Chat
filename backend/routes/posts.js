@@ -1,7 +1,66 @@
 import express from "express";
 import Post from "../models/Post.js";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
+
+//Verify token
+const authenticateToken = (req, res, next) => {
+  const token = req.headers["authentication"]?.split(" ")[1];
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.JWT_SECRET || "jayashree123", (err, user) => {
+    if (err) return res.sendStatus(401);
+    req.user = user;
+    next();
+  })
+};
+
+//Create Post
+router.post("/", authenticateToken, async (req, res) => {
+  const { text, images } = req.body;
+  if (!text && (!images || !images.length))
+    return res.status(400).json({ message: "Text or images are required" });
+
+  try {
+    const post = new Post({
+      text,
+      images: images || [],
+      username: req.user.username,
+      likes: [],
+      comments: [],
+    });
+    const savedPost = await post.save();
+    res.status(201).json(savedPost);
+  } catch (err) {
+    console.error("Create Post Error: ", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+//GET all Post
+router.get("/", authenticateToken, async (req, res) => {
+  try {
+    const posts = await Post.find();
+    res.json(posts);
+  } catch (err) {
+    console.error("Fetch posts error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+//Delete a Post
+router.delete("/:id", authenticateToken, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post || post.username !== req.user.username) return res.sendStatus(403);
+    await Post.findByIdAndDelete(req.params.id);
+    res.sendStatus(204);
+  } catch (err) {
+    console.error("Delete post error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
 
 router.put("/:postId/like", async (req, res) => {
   const { username } = req.body;
@@ -64,6 +123,63 @@ router.post("/:postId/comment", async (req, res) => {
     res.json({ comments: post.comments });
   } catch (err) {
     console.error("Comment operation error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+//Delete a comment
+router.delete("/:id/comment/:commentId", authenticateToken, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    const comment = post.comments.id(req.params.commentId);
+    if (!comment || comment.user !== req.user.username) return res.sendStatus(403);
+
+    post.comments.pull({ _id: req.params.commentId });
+    await post.save();
+    res.json({ comments: post.comments });
+  } catch (err) {
+    console.error("Delete comment error: ", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+//Edit a comment
+router.put("/:id/comment/:commentId", authenticateToken, async (req, res) => {
+  const { text } = req.body;
+  if (!text) return res.status(400).json({ message: "Text is required" });
+
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    const comment = post.comments.id(req.params.commentId);
+    if (!comment || comment.user !== req.user.username) return res.sendStatus(403);
+
+    comment.text = text;
+    await post.save();
+    res.json({ comments: post.comments });
+  } catch (err) {
+    console.error("Edit comment error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+//Edit a post
+router.put("/:id", authenticateToken, async (req, res) => {
+  const { text } = req.body;
+  if (!text) return res.status(400).json({ message: "Text is required" });
+
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post || post.username !== req.user.username) return res.sendStatus(403);
+
+    post.text = text;
+    await post.save();
+    res.json(post);
+  } catch (err) {
+    console.error("Edit post error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
