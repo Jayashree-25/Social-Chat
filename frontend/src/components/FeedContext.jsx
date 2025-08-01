@@ -20,6 +20,7 @@ export const FeedProvider = ({ children }) => {
 
     const fetchPosts = async () => {
       const token = localStorage.getItem("token");
+      console.log("FetchPosts token:", token); // Debug token
       if (!token) {
         console.warn("No token available, skipping post fetch");
         return;
@@ -51,6 +52,7 @@ export const FeedProvider = ({ children }) => {
 
   const addPost = async (newPost) => {
     const token = localStorage.getItem("token");
+    console.log("AddPost token:", token); // Debug token
     if (!token) {
       console.warn("No token available, cannot add post");
       return;
@@ -62,6 +64,7 @@ export const FeedProvider = ({ children }) => {
         {
           text: newPost.text,
           images: newPost.images || [],
+          username: currentUser?.username, // Add username to payload if required
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -77,6 +80,11 @@ export const FeedProvider = ({ children }) => {
         status: err.response?.status,
         data: err.response?.data,
       });
+      if (err.response?.status === 401) {
+        console.warn("Unauthorized: Token might be invalid. Consider logging out or refreshing token.");
+        // Optionally clear token: localStorage.removeItem("token");
+        // Or trigger a logout: if you have a logout function from AuthContext
+      }
     }
   };
 
