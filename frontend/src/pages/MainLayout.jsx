@@ -5,8 +5,17 @@ import { FeedContext } from "../components/FeedContext";
 import Carousel from "../components/Carousel";
 
 const MainLayout = () => {
-    const { currentUser, loading, error } = useContext(UserContext);
-    const { posts, deletePost, editPost, likePost, addComment, deleteComment, editComment } = useContext(FeedContext);
+    const { currentUser, loading, error } = useContext(UserContext) || {}; // Default to empty object
+    const feedContext = useContext(FeedContext) || {}; // Default to empty object if undefined
+    const {
+        posts = [], // Default to empty array
+        deletePost,
+        editPost,
+        likePost,
+        addComment,
+        deleteComment,
+        editComment,
+    } = feedContext;
     const [commentText, setCommentText] = useState("");
     const [editCommentId, setEditCommentId] = useState(null);
     const [editText, setEditText] = useState("");
@@ -47,8 +56,8 @@ const MainLayout = () => {
 
     const handleEditComment = (comment, postId) => {
         setEditCommentId(comment.id);
-        setCommentText(comment.text);
-    }
+        setEditText(comment.text);
+    };
 
     const handleSaveEditComment = (postId, commentId) => {
         if (!editText.trim()) {
@@ -82,7 +91,7 @@ const MainLayout = () => {
             return;
         }
         if (!currentUser?.username) {
-            console.error("Not logged in, can't edit")
+            console.error("Not logged in, can't edit");
         }
         editPost(postId, editPostText);
         setEditPostId(null);
@@ -258,9 +267,7 @@ const MainLayout = () => {
                                         </p>
                                     )}
                                     <div style={{ marginTop: "5px" }}>
-                                        <h4 style={{ fontSize: "1rem", color: "#333", marginBottom: "5px" }}>
-                                            Comments
-                                        </h4>
+                                        <h4 style={{ fontSize: "1rem", color: "#333", marginBottom: "5px" }}>Comments</h4>
                                         {post.comments && post.comments.length > 0 ? (
                                             <>
                                                 {post.comments.slice(0, 2).map((comment) => (

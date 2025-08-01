@@ -1,21 +1,23 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { AuthContext } from "./context/AuthContext.js"; // Added .js extension
+import { AuthContext } from "../context/AuthContext.jsx"; // Corrected extension
+
+console.log("AuthContext imported:", AuthContext); // Debug log
 
 export const FeedContext = createContext();
 
 export const FeedProvider = ({ children }) => {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]); // Initialize with empty array
   const { currentUser } = useContext(AuthContext);
-
-  // Guard against null currentUser
-  if (!currentUser) {
-    console.warn("No current user, feed functionality limited");
-    return <>{children}</>; // Render children without full functionality if no user
-  }
 
   // Fetch all posts from backend on mount
   useEffect(() => {
+    if (!currentUser) {
+      console.warn("No current user, feed functionality limited");
+      setPosts([]); // Reset posts when no user
+      return;
+    }
+
     const fetchPosts = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -45,7 +47,7 @@ export const FeedProvider = ({ children }) => {
     };
 
     fetchPosts();
-  }, []);
+  }, [currentUser]); // Re-fetch if currentUser changes
 
   const addPost = async (newPost) => {
     const token = localStorage.getItem("token");
@@ -248,9 +250,7 @@ export const FeedProvider = ({ children }) => {
       console.log("Edited post response:", response.data);
       if (response.data && response.data.id) {
         setPosts((prevPosts) =>
-          prevPosts.map((post) =>
-            post.id === postId ? response.data : post
-          )
+          prevPosts.map((post) => (post.id === postId ? response.data : post))
         );
       }
     } catch (err) {
@@ -263,7 +263,9 @@ export const FeedProvider = ({ children }) => {
   };
 
   return (
-    <FeedContext.Provider value={{ posts, addPost, deletePost, likePost, addComment, deleteComment, editComment, editPost }}>
+    <FeedContext.Provider
+      value={{ posts, addPost, deletePost, likePost, addComment, deleteComment, editComment, editPost }}
+    >
       {children}
     </FeedContext.Provider>
   );
