@@ -1,10 +1,18 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { AuthContext } from "./context/AuthContext.js"; // Added .js extension
 
 export const FeedContext = createContext();
 
 export const FeedProvider = ({ children }) => {
   const [posts, setPosts] = useState([]);
+  const { currentUser } = useContext(AuthContext);
+
+  // Guard against null currentUser
+  if (!currentUser) {
+    console.warn("No current user, feed functionality limited");
+    return <>{children}</>; // Render children without full functionality if no user
+  }
 
   // Fetch all posts from backend on mount
   useEffect(() => {
@@ -37,7 +45,7 @@ export const FeedProvider = ({ children }) => {
     };
 
     fetchPosts();
-  }, []); 
+  }, []);
 
   const addPost = async (newPost) => {
     const token = localStorage.getItem("token");
@@ -52,7 +60,6 @@ export const FeedProvider = ({ children }) => {
         {
           text: newPost.text,
           images: newPost.images || [],
-          username: newPost.username || localStorage.getItem("username"),
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -107,7 +114,7 @@ export const FeedProvider = ({ children }) => {
     try {
       const response = await axios.put(
         `http://localhost:5000/api/posts/${postId}/like`,
-        { username },
+        { username: username.toLowerCase() },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       console.log("API Response:", response.data);
@@ -144,7 +151,7 @@ export const FeedProvider = ({ children }) => {
     try {
       const response = await axios.post(
         `http://localhost:5000/api/posts/${postId}/comment`,
-        { username, text },
+        { username: username.toLowerCase(), text },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       console.log("API Response for comment:", response.data);
