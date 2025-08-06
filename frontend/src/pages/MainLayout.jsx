@@ -5,6 +5,8 @@ import { FeedContext } from "../components/FeedContext";
 import Carousel from "../components/Carousel";
 
 const auroraStyle = `
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @keyframes moveGradient {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -14,7 +16,8 @@ body {
     background: linear-gradient(-45deg, #0b021a, #2c0b4d, #1a0a3a, #000000);
     background-size: 400% 400%;
     animation: moveGradient 15s ease infinite;
-    color: #333; /* Default text color for the app */
+    font-family: 'Inter', sans-serif;
+    color: #333;
 }
 `;
 
@@ -143,14 +146,19 @@ const MainLayout = () => {
                 style={{
                     flex: 1,
                     overflowY: "auto",
-                    padding: "10px",
+                    padding: "20px",
                     backgroundColor: "#f5f5f5",
-                    maxWidth: "800px",
-                    margin: "0 auto",
+                    maxWidth: "1000px",
+                    marginRight: "350px",
+                    borderRadius: "16px"
                 }}
             >
                 {posts.length === 0 ? (
-                    <p style={{ textAlign: "center", color: "#666", margin: "5px" }}>No posts yet...</p>
+                    <div style={{ textAlign: 'center', color: 'rgba(255, 255, 255, 0.7)', marginTop: '60px' }}>
+                        <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
+                        <h2 style={{ marginTop: '20px', fontWeight: 600, color: '#fff' }}>Your Feed is Empty</h2>
+                        <p>Start by creating a new post to share your thoughts.</p>
+                    </div>
                 ) : (
                     posts.map((post) => {
                         const likeList = post.likes?.map((u) => u.toLowerCase()) || [];
@@ -162,36 +170,25 @@ const MainLayout = () => {
                             <div
                                 key={post.id}
                                 style={{
-                                    maxWidth: "100%",
-                                    marginBottom: "10px",
+                                    maxWidth: "900px",
+                                    margin: "0 auto 24px auto",
                                     backgroundColor: "#fff",
-                                    borderRadius: "8px",
-                                    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
+                                    borderRadius: "16px",
+                                    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
                                     overflow: "hidden",
                                     position: "relative",
-                                    padding: "5px",
                                 }}
                             >
-                                <div style={{ padding: "5px" }}>
-                                    <p style={{ fontSize: "0.9rem", color: "#666", marginBottom: "5px" }}>
-                                        Posted by: <strong>{post.username}</strong> |{" "}
+                                <div style={{ padding: "24px" }}>
+                                    <p style={{ fontSize: "0.875rem", color: "#6b7280", marginBottom: "12px", fontWeight: 500 }}>
+                                        Posted by: <strong style={{ color: '#111827', fontWeight: 600 }}>{post.username}</strong> |{" "}
                                         {new Date(post.createdAt).toLocaleString()}
                                     </p>
-                                    {post.images?.length > 1 ? (
-                                        <Carousel images={post.images} />
-                                    ) : post.images?.length === 1 ? (
-                                        <img
-                                            src={post.images[0]}
-                                            alt="Post"
-                                            style={{
-                                                width: "100%",
-                                                height: "200px",
-                                                objectFit: "cover",
-                                                borderTopLeftRadius: "8px",
-                                                borderTopRightRadius: "8px",
-                                            }}
-                                        />
-                                    ) : null}
+                                    {post.images?.length > 0 && ( /* Simplified image logic */
+                                        <div style={{ marginBottom: '16px', borderRadius: '12px', overflow: 'hidden' }}>
+                                            {post.images.length > 1 ? <Carousel images={post.images} /> : <img src={post.images[0]} alt="Post" style={{ width: '100%', display: 'block' }} />}
+                                        </div>
+                                    )}
                                     {editPostId === post.id ? (
                                         <div style={{ marginTop: "5px" }}>
                                             <textarea
@@ -238,8 +235,8 @@ const MainLayout = () => {
                                             </div>
                                         </div>
                                     ) : (
-                                        <p style={{ fontSize: "1rem", color: "#333", lineHeight: "1.3", margin: "5px 0" }}>
-                                            {post.text || "No text"}
+                                        <p style={{ color: "#374151", lineHeight: "1.6" }}> 
+                                            {post.text || ""}
                                         </p>
                                     )}
                                     <div
@@ -253,17 +250,15 @@ const MainLayout = () => {
                                         <button
                                             onClick={() => handleLike(post.id)}
                                             style={{
-                                                border: "none",
-                                                background: "linear-gradient(to right, #FF69B4, #FFA500)",
-                                                color: "white",
-                                                fontWeight: "bold",
-                                                cursor: "pointer",
-                                                padding: "0.3rem 0.8rem",
-                                                borderRadius: "4px",
-                                                transition: "background 0.3s",
+                                                background: hasLiked ? '#ede9fe' : '#f3f4f6', 
+                                                color: hasLiked ? '#8b5cf6' : '#4b5563', 
+                                                border: 'none',
+                                                padding: '8px 16px',
+                                                borderRadius: '9999px', 
+                                                cursor: 'pointer',
+                                                fontWeight: 600,
+                                                transition: 'all 0.2s ease',
                                             }}
-                                            onMouseOver={(e) => (e.target.style.background = "linear-gradient(to right, #FF1493, #FF8C00)")}
-                                            onMouseOut={(e) => (e.target.style.background = "linear-gradient(to right, #FF69B4, #FFA500)")}
                                         >
                                             {hasLiked ? "❤️ Liked" : "👍 Like"}
                                         </button>
@@ -288,7 +283,7 @@ const MainLayout = () => {
                                             )}
                                         </p>
                                     )}
-                                    <div style={{ marginTop: "5px" }}>
+                                    <div style={{ marginTop: "20px" }}>
                                         <h4 style={{ fontSize: "1rem", color: "#333", marginBottom: "5px" }}>Comments</h4>
                                         {post.comments && post.comments.length > 0 ? (
                                             <>
@@ -435,7 +430,7 @@ const MainLayout = () => {
                                     </div>
                                 </div>
                                 {isOwner && !editPostId && (
-                                    <div style={{ position: "absolute", top: "5px", right: "5px" }}>
+                                    <div style={{ position: "absolute", top: "20px", right: "20px", display: 'flex', gap: '8px' }}>
                                         <button
                                             onClick={() => handleEditPost(post)}
                                             style={{
