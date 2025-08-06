@@ -1,4 +1,3 @@
-// Carousel.jsx
 import React, { useState } from "react";
 
 const Carousel = ({ images }) => {
@@ -13,11 +12,11 @@ const Carousel = ({ images }) => {
   };
 
   return (
-    <div style={{ position: "relative", width: "100%", maxWidth: "600px", overflow: "hidden" }}>
+    <div style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }}>
       <img
         src={images[current]}
         alt={`slide-${current}`}
-        style={{ width: "100%", height: "300px", objectFit: "cover", borderRadius: "12px" }}
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
       <button
         onClick={prevSlide}
@@ -30,12 +29,15 @@ const Carousel = ({ images }) => {
           color: "#fff",
           border: "none",
           borderRadius: "50%",
-          width: "32px",
-          height: "32px",
+          width: "40px",
+          height: "40px",
           cursor: "pointer",
+          fontSize: "24px",
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
-      >
-        ‹
+      > &#10094;
       </button>
       <button
         onClick={nextSlide}
@@ -48,12 +50,16 @@ const Carousel = ({ images }) => {
           color: "#fff",
           border: "none",
           borderRadius: "50%",
-          width: "32px",
-          height: "32px",
+          width: "40px", 
+          height: "40px", 
           cursor: "pointer",
+          fontSize: "24px", 
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
       >
-        ›
+        &#10095;
       </button>
     </div>
   );

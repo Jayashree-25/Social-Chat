@@ -147,7 +147,10 @@ const MainLayout = () => {
                     flex: 1,
                     overflowY: "auto",
                     padding: "20px",
-                    backgroundColor: "#f5f5f5",
+                    background: "rgba(0, 0, 0, 0.2)",
+                    backdropFilter: "blur(10px)",
+                    WebkitBackdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
                     maxWidth: "1000px",
                     marginRight: "350px",
                     borderRadius: "16px"
@@ -172,23 +175,41 @@ const MainLayout = () => {
                                 style={{
                                     maxWidth: "900px",
                                     margin: "0 auto 24px auto",
-                                    backgroundColor: "#fff",
+                                    background: "rgba(255, 255, 255, 0.08)",
+                                    border: "1px solid rgba(255, 255, 255, 0.15)",
                                     borderRadius: "16px",
-                                    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                                    boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
                                     overflow: "hidden",
                                     position: "relative",
+                                    color: "#fff",
                                 }}
                             >
                                 <div style={{ padding: "24px" }}>
-                                    <p style={{ fontSize: "0.875rem", color: "#6b7280", marginBottom: "12px", fontWeight: 500 }}>
-                                        Posted by: <strong style={{ color: '#111827', fontWeight: 600 }}>{post.username}</strong> |{" "}
+                                    <p style={{ fontSize: "0.875rem", color: "rgba(255, 255, 255, 0.7)", marginBottom: "12px", fontWeight: 500 }}>
+                                        Posted by: <strong style={{ color: '#ffffff', fontWeight: 600 }}>{post.username}</strong> |{" "}
                                         {new Date(post.createdAt).toLocaleString()}
                                     </p>
-                                    {post.images?.length > 0 && ( /* Simplified image logic */
-                                        <div style={{ marginBottom: '16px', borderRadius: '12px', overflow: 'hidden' }}>
-                                            {post.images.length > 1 ? <Carousel images={post.images} /> : <img src={post.images[0]} alt="Post" style={{ width: '100%', display: 'block' }} />}
+
+                                    {post.images?.length > 0 && (
+                                        // Changed: This container now enforces a fixed height for the image/carousel
+                                        <div style={{ height: '400px', marginBottom: '16px', borderRadius: '12px', overflow: 'hidden', backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                                            {post.images.length > 1 ? (
+                                                <Carousel images={post.images} /> 
+                                            ) : (
+                                                <img
+                                                    src={post.images[0]}
+                                                    alt="Post"
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '100%', 
+                                                        objectFit: 'cover',
+                                                        display: 'block'
+                                                    }}
+                                                />
+                                            )}
                                         </div>
                                     )}
+
                                     {editPostId === post.id ? (
                                         <div style={{ marginTop: "5px" }}>
                                             <textarea
@@ -235,7 +256,7 @@ const MainLayout = () => {
                                             </div>
                                         </div>
                                     ) : (
-                                        <p style={{ color: "#374151", lineHeight: "1.6" }}> 
+                                        <p style={{ color: "#e5e7eb", lineHeight: "1.6" }}>
                                             {post.text || ""}
                                         </p>
                                     )}
@@ -250,11 +271,11 @@ const MainLayout = () => {
                                         <button
                                             onClick={() => handleLike(post.id)}
                                             style={{
-                                                background: hasLiked ? '#ede9fe' : '#f3f4f6', 
-                                                color: hasLiked ? '#8b5cf6' : '#4b5563', 
+                                                background: hasLiked ? '#ede9fe' : '#f3f4f6',
+                                                color: hasLiked ? '#8b5cf6' : '#4b5563',
                                                 border: 'none',
                                                 padding: '8px 16px',
-                                                borderRadius: '9999px', 
+                                                borderRadius: '9999px',
                                                 cursor: 'pointer',
                                                 fontWeight: 600,
                                                 transition: 'all 0.2s ease',
@@ -283,20 +304,20 @@ const MainLayout = () => {
                                             )}
                                         </p>
                                     )}
+
+
                                     <div style={{ marginTop: "20px" }}>
-                                        <h4 style={{ fontSize: "1rem", color: "#333", marginBottom: "5px" }}>Comments</h4>
+                                        <h4 style={{ fontSize: "1rem", color: "rgba(255,255,255,0.9)", marginBottom: "12px" }}>Comments</h4>
                                         {post.comments && post.comments.length > 0 ? (
                                             <>
                                                 {post.comments.slice(0, 2).map((comment) => (
                                                     <div
                                                         key={comment.id}
                                                         style={{
-                                                            backgroundColor: "#f9f9f9",
-                                                            padding: "0.5rem",
-                                                            marginBottom: "5px",
-                                                            borderRadius: "4px",
-                                                            borderLeft: "2px solid #1976d2",
-                                                            position: "relative",
+                                                            background: 'rgba(0,0,0,0.2)', 
+                                                            padding: '12px', 
+                                                            borderRadius: '8px', 
+                                                            marginBottom: '8px',
                                                         }}
                                                     >
                                                         {editCommentId === comment.id ? (
@@ -329,13 +350,8 @@ const MainLayout = () => {
                                                             </div>
                                                         ) : (
                                                             <>
-                                                                <strong style={{ color: "#1976d2" }}>{comment.user}</strong>
-                                                                <span style={{ color: "#555", marginLeft: "0.2rem" }}>:</span>{" "}
-                                                                {comment.text}
-                                                                <br />
-                                                                <small style={{ color: "#888", fontSize: "0.7rem" }}>
-                                                                    {new Date(comment.createdAt).toLocaleString()}
-                                                                </small>
+                                                                <strong style={{ color: "#e5e7eb" }}>{comment.user}</strong>
+                                                                <p style={{ color: 'rgba(255,255,255,0.7)', margin: '4px 0 0 0' }}>{comment.text}</p>
                                                             </>
                                                         )}
                                                         {comment.user?.toLowerCase() === currentUsername && (
@@ -395,7 +411,8 @@ const MainLayout = () => {
                                                 No comments yet.
                                             </p>
                                         )}
-                                        <div style={{ marginTop: "5px", display: "flex", gap: "0.5rem" }}>
+
+                                        <div style={{ marginTop: "16px", display: "flex", gap: "10px" }}>
                                             <input
                                                 type="text"
                                                 value={commentText}
@@ -404,15 +421,18 @@ const MainLayout = () => {
                                                 style={{
                                                     flex: "1",
                                                     padding: "0.3rem",
-                                                    border: "1px solid #ddd",
-                                                    borderRadius: "3px",
-                                                    fontSize: "0.8rem",
+                                                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                                                    background: "rgba(0, 0, 0, 0.2)", 
+                                                    color: '#fff',
+                                                    borderRadius: "8px",
+                                                    fontSize: "0.9rem",
+                                                    outline: 'none',
                                                 }}
                                             />
                                             <button
                                                 onClick={() => handleCommentSubmit(post.id)}
                                                 style={{
-                                                    background: "linear-gradient(to right, #FF0000, #FFFF00)",
+                                                    background: "linear-gradient(to right, #8e2de2, #e000e0ff)",
                                                     color: "white",
                                                     border: "none",
                                                     padding: "0.3rem 0.8rem",
@@ -421,8 +441,8 @@ const MainLayout = () => {
                                                     fontSize: "0.8rem",
                                                     transition: "background 0.3s",
                                                 }}
-                                                onMouseOver={(e) => (e.target.style.background = "linear-gradient(to right, #CC0000, #FFD700)")}
-                                                onMouseOut={(e) => (e.target.style.background = "linear-gradient(to right, #FF0000, #FFFF00)")}
+                                                onMouseOver={(e) => e.target.style.opacity = 0.9}
+                                                onMouseOut={(e) => e.target.style.opacity = 1}
                                             >
                                                 Post Comment
                                             </button>
@@ -430,17 +450,11 @@ const MainLayout = () => {
                                     </div>
                                 </div>
                                 {isOwner && !editPostId && (
-                                    <div style={{ position: "absolute", top: "20px", right: "20px", display: 'flex', gap: '8px' }}>
+                                    <div style={{ position: "absolute", top: "20px", right: "20px", display: "flex", gap: "8px" }}>
                                         <button
                                             onClick={() => handleEditPost(post)}
                                             style={{
-                                                background: "#2196F3",
-                                                color: "white",
-                                                border: "none",
-                                                padding: "0.3rem 0.8rem",
-                                                borderRadius: "4px",
-                                                cursor: "pointer",
-                                                marginRight: "5px",
+                                                background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.7)',
                                             }}
                                         >
                                             Edit
@@ -448,12 +462,7 @@ const MainLayout = () => {
                                         <button
                                             onClick={() => handleDeletePost(post.id)}
                                             style={{
-                                                background: "#f44336",
-                                                color: "white",
-                                                border: "none",
-                                                padding: "0.3rem 0.8rem",
-                                                borderRadius: "4px",
-                                                cursor: "pointer",
+                                                background: 'none', border: 'none', cursor: 'pointer', color: '#f87171',
                                             }}
                                         >
                                             Delete
