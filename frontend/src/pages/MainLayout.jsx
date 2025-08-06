@@ -4,6 +4,20 @@ import Sidebar from "../components/Sidebar";
 import { FeedContext } from "../components/FeedContext";
 import Carousel from "../components/Carousel";
 
+const auroraStyle = `
+@keyframes moveGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+body {
+    background: linear-gradient(-45deg, #0b021a, #2c0b4d, #1a0a3a, #000000);
+    background-size: 400% 400%;
+    animation: moveGradient 15s ease infinite;
+    color: #333; /* Default text color for the app */
+}
+`;
+
 const MainLayout = () => {
     const { currentUser, loading, error } = useContext(UserContext) || {}; // Default to empty object
     const feedContext = useContext(FeedContext) || {}; // Default to empty object if undefined
@@ -25,8 +39,16 @@ const MainLayout = () => {
     const currentUsername = currentUser?.username?.toLowerCase();
 
     useEffect(() => {
-        console.log("MainLayout currentUser:", currentUser);
-    }, [currentUser]);
+        // Inject the aurora styles into the document's head
+        const styleTag = document.createElement("style");
+        styleTag.innerHTML = auroraStyle;
+        document.head.appendChild(styleTag);
+
+        // Cleanup function to remove the style when the component unmounts
+        return () => {
+            document.head.removeChild(styleTag);
+        };
+    }, []);
 
     if (loading) return <p>Loading user...</p>;
     if (error) return <p>Error: {error}</p>;
