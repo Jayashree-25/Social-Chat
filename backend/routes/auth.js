@@ -28,7 +28,7 @@ router.post("/register", async (req, res) => {
     });
     await newUser.save();
 
-    // JWT token
+    // JWT token contains only the user ID. The middleware will fetch the user details.
     const token = jwt.sign(
       { userId: newUser._id },
       process.env.JWT_SECRET,
@@ -37,7 +37,7 @@ router.post("/register", async (req, res) => {
 
     res.status(201).json({
       token,
-      user: { username: newUser.name, email: newUser.email }, // Use name as username
+      user: { username: newUser.name, email: newUser.email },
     });
   } catch (err) {
     console.error("Register error: ", err.message);
@@ -70,7 +70,7 @@ router.post("/login", async (req, res) => {
 
     res.status(200).json({
       token,
-      user: { username: existingUser.name, email: existingUser.email }, // Use name as username
+      user: { username: existingUser.name, email: existingUser.email },
     });
   } catch (err) {
     console.error("Login error: ", err.message);
@@ -78,17 +78,13 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// GET - Current logged-in user
+// GET - Current logged-in userr
 router.get("/me", verifyToken, (req, res) => {
   try {
-    // req.user is set by verifyToken middleware
     const user = req.user;
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
     res.status(200).json({
       user: {
-        username: user.name || user.email, // Fallback to email if name is missing
+        username: user.name,
         email: user.email,
       },
     });
@@ -133,7 +129,7 @@ router.post("/google", async (req, res) => {
 
     res.status(200).json({
       token,
-      user: { username: user.name || user.email, email: user.email }, // Use name or email as username
+      user: { username: user.name, email: user.email },
     });
   } catch (err) {
     console.error("Google OAuth Error:", err.message);
