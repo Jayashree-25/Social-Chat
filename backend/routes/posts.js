@@ -1,44 +1,22 @@
 import express from "express";
 import Post from "../models/Post.js";
-import jwt from "jsonwebtoken";
+import verifyToken from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
-// Verify token
-const authenticateToken = (req, res, next) => {
-  console.log("Headers:", req.headers);
-  const token = req.headers["authorization"]?.split(" ")[1];
-  if (!token) return res.status(401).json({ message: "No token provided" });
-
-  jwt.verify(token, process.env.JWT_SECRET || "jayashree123", (err, user) => {
-    if (err) {
-      console.error("Token verification error:", err.message);
-      return res.status(401).json({ message: "Invalid token", error: err.message });
-    }
-    console.log("Decoded user:", user);
-    req.user = user;
-    next();
-  });
-};
-
 // Create Post
-router.post("/", authenticateToken, async (req, res) => {
-  console.log("POST /api/posts hit", "req.user:", req.user);
+router.post("/", verifyToken, async (req, res) => {
   const { text, images } = req.body;
-  if (!text && (!images || !images.length))
+  if (!text && (!images || !images.length)) {
     return res.status(400).json({ message: "Text or images are required" });
+  }
 
   try {
-    if (!req.user || !req.user.name) {
-      console.error("User not authenticated or name missing:", req.user);
-      return res.status(401).json({ message: "Username not found in token" });
-    }
-
     const post = new Post({
       id: Date.now().toString(),
       text,
       images: images || [],
-      username: req.user.name.toLowerCase(), // Normalize to lowercase
+      username: req.user.name.toLowerCase(),
       likes: [],
       comments: [],
     });
@@ -52,9 +30,10 @@ router.post("/", authenticateToken, async (req, res) => {
 });
 
 // GET all Posts
-router.get("/", authenticateToken, async (req, res) => {
+router.get("/", verifyToken, async (req, res) => {
   try {
-    const posts = await Post.find();
+    // Sort by creation date, newest first
+    const posts = await Post.find().sort({ createdAt: -1 });
     res.json(posts);
   } catch (err) {
     console.error("Fetch posts error:", err);
@@ -63,43 +42,42 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 
 // Delete a Post
-router.delete("/:id", authenticateToken, async (req, res) => {
+router.delete("/:id", verifyToken, async (req, res) => {
   try {
     const post = await Post.findOne({ id: req.params.id });
-    console.log("Delete attempt - post:", post, "req.user.name:", req.user.name); // Debug
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    // Check if the logged-in user is the owner of the post
     if (post.username.toLowerCase() !== req.user.name.toLowerCase()) {
-      console.log("Forbidden - username mismatch:", post.username, req.user.name);
-      return res.sendStatus(403);
+      return res.status(403).json({ message: "Forbidden: You can only delete your own posts" });
     }
     await Post.findOneAndDelete({ id: req.params.id });
-    res.sendStatus(204);
+    res.sendStatus(204); // No content
   } catch (err) {
     console.error("Delete post error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
-// Like a post
-router.put("/:id/like", authenticateToken, async (req, res) => {
-  const { username } = req.body;
+// Like/Unlike a post
+router.put("/:id/like", verifyToken, async (req, res) => {
   const { id } = req.params;
-
-  if (!username) return res.status(400).json({ message: "Username required" });
+  const username = req.user.name.toLowerCase(); // Get username from the verified token
 
   try {
     let post = await Post.findOne({ id });
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
 
     const normalizedLikes = post.likes.map((u) => u.toLowerCase());
-    const userIndex = normalizedLikes.indexOf(username.toLowerCase());
+    const userIndex = normalizedLikes.indexOf(username);
 
     if (userIndex === -1) {
-      post.likes.push(username);
-      console.log(`User ${username} liked post ${id}, new likes:`, post.likes);
+      post.likes.push(req.user.name);
     } else {
-      post.likes = post.likes.filter((u) => u.toLowerCase() !== username.toLowerCase());
-      console.log(`User ${username} unliked post ${id}, new likes:`, post.likes);
+      post.likes.splice(userIndex, 1);
     }
 
     await post.save();
@@ -111,20 +89,24 @@ router.put("/:id/like", authenticateToken, async (req, res) => {
 });
 
 // Add a comment
-router.post("/:id/comment", authenticateToken, async (req, res) => {
-  console.log("Endpoint hit - /api/posts/:id/comment with id:", req.params.id);
-  const { username, text } = req.body;
+router.post("/:id/comment", verifyToken, async (req, res) => {
+  const { text } = req.body;
   const { id } = req.params;
+  const username = req.user.name;
 
-  if (!username || !text) return res.status(400).json({ message: "Username and text are required" });
+  if (!text) {
+    return res.status(400).json({ message: "Comment text is required" });
+  }
 
   try {
     let post = await Post.findOne({ id });
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
 
     post.comments.push({ user: username, text, createdAt: new Date() });
     await post.save();
-    res.json({ comments: post.comments });
+    res.status(201).json({ comments: post.comments });
   } catch (err) {
     console.error("Comment operation error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
@@ -132,15 +114,20 @@ router.post("/:id/comment", authenticateToken, async (req, res) => {
 });
 
 // Delete a comment
-router.delete("/:id/comment/:commentId", authenticateToken, async (req, res) => {
+router.delete("/:id/comment/:commentId", verifyToken, async (req, res) => {
   try {
     const post = await Post.findOne({ id: req.params.id });
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     const comment = post.comments.id(req.params.commentId);
-    if (!comment || comment.user.toLowerCase() !== req.user.name.toLowerCase()) return res.sendStatus(403);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
 
-    post.comments.pull({ _id: req.params.commentId });
+    // Check if the logged-in user is the owner of the comment
+    if (comment.user.toLowerCase() !== req.user.name.toLowerCase()) {
+      return res.status(403).json({ message: "Forbidden: You can only delete your own comments" });
+    }
+
+    comment.remove();
     await post.save();
     res.json({ comments: post.comments });
   } catch (err) {
@@ -150,7 +137,7 @@ router.delete("/:id/comment/:commentId", authenticateToken, async (req, res) => 
 });
 
 // Edit a comment
-router.put("/:id/comment/:commentId", authenticateToken, async (req, res) => {
+router.put("/:id/comment/:commentId", verifyToken, async (req, res) => {
   const { text } = req.body;
   if (!text) return res.status(400).json({ message: "Text is required" });
 
@@ -159,7 +146,11 @@ router.put("/:id/comment/:commentId", authenticateToken, async (req, res) => {
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     const comment = post.comments.id(req.params.commentId);
-    if (!comment || comment.user.toLowerCase() !== req.user.name.toLowerCase()) return res.sendStatus(403);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+    if (comment.user.toLowerCase() !== req.user.name.toLowerCase()) {
+      return res.status(403).json({ message: "Forbidden: You can only edit your own comments" });
+    }
 
     comment.text = text;
     await post.save();
@@ -171,13 +162,17 @@ router.put("/:id/comment/:commentId", authenticateToken, async (req, res) => {
 });
 
 // Edit a post
-router.put("/:id", authenticateToken, async (req, res) => {
+router.put("/:id", verifyToken, async (req, res) => {
   const { text } = req.body;
   if (!text) return res.status(400).json({ message: "Text is required" });
 
   try {
     const post = await Post.findOne({ id: req.params.id });
-    if (!post || post.username.toLowerCase() !== req.user.name.toLowerCase()) return res.sendStatus(403);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    if (post.username.toLowerCase() !== req.user.name.toLowerCase()) {
+      return res.status(403).json({ message: "Forbidden: You can only edit your own posts" });
+    }
 
     post.text = text;
     await post.save();
