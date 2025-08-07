@@ -1,13 +1,13 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { AuthContext } from "../context/AuthContext.jsx"; // Corrected extension
+import { AuthContext } from "../context/AuthContext.jsx";
 
-console.log("AuthContext imported:", AuthContext); // Debug log
+console.log("AuthContext imported:", AuthContext);
 
 export const FeedContext = createContext();
 
 export const FeedProvider = ({ children }) => {
-  const [posts, setPosts] = useState([]); // Initialize with empty array
+  const [posts, setPosts] = useState([]);
   const { currentUser } = useContext(AuthContext);
 
   // Fetch all posts from backend on mount
@@ -161,17 +161,19 @@ export const FeedProvider = ({ children }) => {
     try {
       const response = await axios.post(
         `http://localhost:5000/api/posts/${postId}/comment`,
-        { username: username.toLowerCase(), text },
+        { text }, // Changed: Backend gets username from token, so we only need to send the text
         { headers: { Authorization: `Bearer ${token}` } }
       );
       console.log("API Response for comment:", response.data);
-      if (response.data.comments && Array.isArray(response.data.comments)) {
+
+      if (response.data) {
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
-            post.id === postId ? { ...post, comments: response.data.comments } : post
+            post.id === postId ? response.data : post
           )
         );
-      } else {
+      }
+      else {
         console.error("Comment operation failed, no valid comments array in response");
       }
     } catch (err) {
@@ -195,11 +197,13 @@ export const FeedProvider = ({ children }) => {
         `http://localhost:5000/api/posts/${postId}/comment/${commentId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
       console.log("Deleted comment response:", response.data);
-      if (response.data.comments && Array.isArray(response.data.comments)) {
+
+      if (response.data) {
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
-            post.id === postId ? { ...post, comments: response.data.comments } : post
+            post.id === postId ? response.data : post
           )
         );
       }
@@ -225,11 +229,10 @@ export const FeedProvider = ({ children }) => {
         { text },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("Edited comment response:", response.data);
-      if (response.data.comments && Array.isArray(response.data.comments)) {
+      if (response.data) {
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
-            post.id === postId ? { ...post, comments: response.data.comments } : post
+            post.id === postId ? response.data : post
           )
         );
       }

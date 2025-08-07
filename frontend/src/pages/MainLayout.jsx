@@ -22,10 +22,10 @@ body {
 `;
 
 const MainLayout = () => {
-    const { currentUser, loading, error } = useContext(UserContext) || {}; // Default to empty object
-    const feedContext = useContext(FeedContext) || {}; // Default to empty object if undefined
+    const { currentUser, loading, error } = useContext(UserContext) || {};
+    const feedContext = useContext(FeedContext) || {};
     const {
-        posts = [], // Default to empty array
+        posts = [],
         deletePost,
         editPost,
         likePost,
@@ -194,14 +194,14 @@ const MainLayout = () => {
                                         // Changed: This container now enforces a fixed height for the image/carousel
                                         <div style={{ height: '400px', marginBottom: '16px', borderRadius: '12px', overflow: 'hidden', backgroundColor: 'rgba(0,0,0,0.2)' }}>
                                             {post.images.length > 1 ? (
-                                                <Carousel images={post.images} /> 
+                                                <Carousel images={post.images} />
                                             ) : (
                                                 <img
                                                     src={post.images[0]}
                                                     alt="Post"
                                                     style={{
                                                         width: '100%',
-                                                        height: '100%', 
+                                                        height: '100%',
                                                         objectFit: 'cover',
                                                         display: 'block'
                                                     }}
@@ -310,99 +310,12 @@ const MainLayout = () => {
                                         <h4 style={{ fontSize: "1rem", color: "rgba(255,255,255,0.9)", marginBottom: "12px" }}>Comments</h4>
                                         {post.comments && post.comments.length > 0 ? (
                                             <>
-                                                {post.comments.slice(0, 2).map((comment) => (
-                                                    <div
-                                                        key={comment.id}
-                                                        style={{
-                                                            background: 'rgba(0,0,0,0.2)', 
-                                                            padding: '12px', 
-                                                            borderRadius: '8px', 
-                                                            marginBottom: '8px',
-                                                        }}
-                                                    >
-                                                        {editCommentId === comment.id ? (
-                                                            <div style={{ display: "flex", gap: "0.3rem" }}>
-                                                                <input
-                                                                    type="text"
-                                                                    value={editText}
-                                                                    onChange={(e) => setEditText(e.target.value)}
-                                                                    style={{
-                                                                        flex: "1",
-                                                                        padding: "0.2rem",
-                                                                        border: "1px solid #ddd",
-                                                                        borderRadius: "3px",
-                                                                        fontSize: "0.8rem",
-                                                                    }}
-                                                                />
-                                                                <button
-                                                                    onClick={() => handleSaveEditComment(post.id, comment.id)}
-                                                                    style={{
-                                                                        background: "#4CAF50",
-                                                                        color: "white",
-                                                                        border: "none",
-                                                                        padding: "0.2rem 0.4rem",
-                                                                        borderRadius: "3px",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                >
-                                                                    Save
-                                                                </button>
-                                                            </div>
-                                                        ) : (
-                                                            <>
-                                                                <strong style={{ color: "#e5e7eb" }}>{comment.user}</strong>
-                                                                <p style={{ color: 'rgba(255,255,255,0.7)', margin: '4px 0 0 0' }}>{comment.text}</p>
-                                                            </>
-                                                        )}
-                                                        {comment.user?.toLowerCase() === currentUsername && (
-                                                            <div style={{ marginTop: "0.3rem" }}>
-                                                                {editCommentId !== comment.id && (
-                                                                    <button
-                                                                        onClick={() => handleEditComment(comment, post.id)}
-                                                                        style={{
-                                                                            background: "#2196F3",
-                                                                            color: "white",
-                                                                            border: "none",
-                                                                            padding: "0.2rem 0.4rem",
-                                                                            borderRadius: "3px",
-                                                                            cursor: "pointer",
-                                                                            marginRight: "0.3rem",
-                                                                        }}
-                                                                    >
-                                                                        Edit
-                                                                    </button>
-                                                                )}
-                                                                <button
-                                                                    onClick={() => handleDeleteComment(post.id, comment.id)}
-                                                                    style={{
-                                                                        background: "#f44336",
-                                                                        color: "white",
-                                                                        border: "none",
-                                                                        padding: "0.2rem 0.4rem",
-                                                                        borderRadius: "3px",
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                >
-                                                                    Delete
-                                                                </button>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                                {post.comments.length > 2 && (
+                                                {post.comments && post.comments.length > 0 && (
                                                     <button
                                                         onClick={() => handleViewAllComments(post)}
-                                                        style={{
-                                                            background: "#2196F3",
-                                                            color: "white",
-                                                            border: "none",
-                                                            padding: "0.3rem 0.8rem",
-                                                            borderRadius: "4px",
-                                                            cursor: "pointer",
-                                                            marginTop: "5px",
-                                                        }}
+                                                        style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', fontWeight: 500 }}
                                                     >
-                                                        View All Comments ({post.comments.length})
+                                                        View all {post.comments.length} comments
                                                     </button>
                                                 )}
                                             </>
@@ -422,7 +335,7 @@ const MainLayout = () => {
                                                     flex: "1",
                                                     padding: "0.3rem",
                                                     border: "1px solid rgba(255, 255, 255, 0.2)",
-                                                    background: "rgba(0, 0, 0, 0.2)", 
+                                                    background: "rgba(0, 0, 0, 0.2)",
                                                     color: '#fff',
                                                     borderRadius: "8px",
                                                     fontSize: "0.9rem",

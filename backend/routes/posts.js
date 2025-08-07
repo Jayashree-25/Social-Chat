@@ -104,9 +104,9 @@ router.post("/:id/comment", verifyToken, async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    post.comments.push({ user: username, text, createdAt: new Date() });
+    post.comments.push({ user: username, text });
     await post.save();
-    res.status(201).json({ comments: post.comments });
+    res.status(201).json(post);
   } catch (err) {
     console.error("Comment operation error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
@@ -129,7 +129,7 @@ router.delete("/:id/comment/:commentId", verifyToken, async (req, res) => {
 
     comment.remove();
     await post.save();
-    res.json({ comments: post.comments });
+    res.json(post);
   } catch (err) {
     console.error("Delete comment error: ", err);
     res.status(500).json({ message: "Server error", error: err.message });
@@ -154,7 +154,7 @@ router.put("/:id/comment/:commentId", verifyToken, async (req, res) => {
 
     comment.text = text;
     await post.save();
-    res.json({ comments: post.comments });
+    res.json(post);
   } catch (err) {
     console.error("Edit comment error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
