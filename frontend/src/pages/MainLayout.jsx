@@ -80,7 +80,7 @@ const MainLayout = () => {
     };
 
     const handleEditComment = (comment, postId) => {
-        setEditCommentId(comment.id);
+        setEditCommentId(comment._id);
         setEditText(comment.text);
     };
 
@@ -390,131 +390,34 @@ const MainLayout = () => {
 
             {/* Pop-up for All Comments */}
             {showAllComments && (
-                <div
-                    style={{
-                        position: "fixed",
-                        top: "0",
-                        left: "0",
-                        width: "100%",
-                        height: "100%",
-                        backgroundColor: "rgba(0, 0, 0, 0.5)",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        zIndex: "1000",
-                    }}
-                >
-                    <div
-                        style={{
-                            backgroundColor: "#fff",
-                            padding: "15px",
-                            borderRadius: "8px",
-                            maxHeight: "80vh",
-                            overflowY: "auto",
-                            width: "90%",
-                            maxWidth: "500px",
-                        }}
-                    >
-                        <h3 style={{ fontSize: "1.2rem", color: "#333", marginBottom: "10px" }}>
-                            All Comments for "{showAllComments.text || "Post"}"
+                <div style={{ position: "fixed", top: "0", left: "0", width: "100%", height: "100%", background: "rgba(0, 0, 0, 0.6)", backdropFilter: 'blur(5px)', display: "flex", justifyContent: "center", alignItems: "center", zIndex: "1000" }}>
+                    <div style={{ background: "rgba(25, 25, 25, 0.8)", border: '1px solid rgba(255,255,255,0.1)', padding: "24px", borderRadius: "16px", maxHeight: "80vh", overflowY: "auto", width: "90%", maxWidth: "600px", color: '#fff' }}>
+                        <h3 style={{ fontSize: "1.5rem", color: "#fff", marginBottom: "20px", borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px' }}>
+                            Comments
                         </h3>
                         {showAllComments.comments.map((comment) => (
-                            <div
-                                key={comment.id}
-                                style={{
-                                    backgroundColor: "#f9f9f9",
-                                    padding: "0.5rem",
-                                    marginBottom: "5px",
-                                    borderRadius: "4px",
-                                    borderLeft: "2px solid #1976d2",
-                                    position: "relative",
-                                }}
-                            >
-                                {editCommentId === comment.id ? (
-                                    <div style={{ display: "flex", gap: "0.3rem" }}>
-                                        <input
-                                            type="text"
-                                            value={editText}
-                                            onChange={(e) => setEditText(e.target.value)}
-                                            style={{
-                                                flex: "1",
-                                                padding: "0.2rem",
-                                                border: "1px solid #ddd",
-                                                borderRadius: "3px",
-                                                fontSize: "0.8rem",
-                                            }}
-                                        />
-                                        <button
-                                            onClick={() => handleSaveEditComment(showAllComments.id, comment.id)}
-                                            style={{
-                                                background: "#4CAF50",
-                                                color: "white",
-                                                border: "none",
-                                                padding: "0.2rem 0.4rem",
-                                                borderRadius: "3px",
-                                                cursor: "pointer",
-                                            }}
-                                        >
-                                            Save
-                                        </button>
+                            <div key={comment._id} style={{ marginBottom: "16px" }}>
+                                <strong style={{ color: '#e5e7eb' }}>{comment.user}</strong>
+                                {editCommentId === comment._id ? (
+                                    <div>
+                                        <input type="text" value={editText} onChange={(e) => setEditText(e.target.value)} />
+                                        <button onClick={() => handleSaveEditComment(showAllComments.id, comment._id)}>Save</button>
                                     </div>
                                 ) : (
-                                    <>
-                                        <strong style={{ color: "#1976d2" }}>{comment.user}</strong>
-                                        <span style={{ color: "#555", marginLeft: "0.2rem" }}>:</span>{" "}
-                                        {comment.text}
-                                        <br />
-                                        <small style={{ color: "#888", fontSize: "0.7rem" }}>
-                                            {new Date(comment.createdAt).toLocaleString()}
-                                        </small>
-                                    </>
+                                    <p style={{ color: 'rgba(255,255,255,0.8)', margin: '4px 0 0 0' }}>{comment.text}</p>
                                 )}
-                                {comment.user?.toLowerCase() === currentUsername && (
-                                    <div style={{ marginTop: "0.3rem" }}>
-                                        {editCommentId !== comment.id && (
-                                            <button
-                                                onClick={() => handleEditComment(comment, showAllComments.id)}
-                                                style={{
-                                                    background: "#2196F3",
-                                                    color: "white",
-                                                    border: "none",
-                                                    padding: "0.2rem 0.4rem",
-                                                    borderRadius: "3px",
-                                                    cursor: "pointer",
-                                                    marginRight: "0.3rem",
-                                                }}
-                                            >
-                                                Edit
-                                            </button>
-                                        )}
-                                        <button
-                                            onClick={() => handleDeleteComment(showAllComments.id, comment.id)}
-                                            style={{
-                                                background: "#f44336",
-                                                color: "white",
-                                                border: "none",
-                                                padding: "0.2rem 0.4rem",
-                                                borderRadius: "3px",
-                                                cursor: "pointer",
-                                            }}
-                                        >
-                                            Delete
-                                        </button>
+                                <small style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>{new Date(comment.createdAt).toLocaleString()}</small>
+                                {currentUser.username.toLowerCase() === comment.user.toLowerCase() && (
+                                    <div>
+                                        <button onClick={() => handleEditComment(comment)}>Edit</button>
+                                        <button onClick={() => handleDeleteComment(showAllComments.id, comment._id)}>Delete</button>
                                     </div>
                                 )}
                             </div>
                         ))}
                         <button
                             onClick={closePopup}
-                            style={{
-                                background: "#f44336",
-                                color: "white",
-                                border: "none",
-                                padding: "0.3rem 0.8rem",
-                                borderRadius: "4px",
-                                cursor: "pointer",
-                                marginTop: "10px",
-                            }}
+                            style={{ background: "#f44336", color: "white", border: "none", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", marginTop: "20px", width: '100%' }}
                         >
                             Close
                         </button>
