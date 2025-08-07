@@ -48,12 +48,11 @@ router.delete("/:id", verifyToken, async (req, res) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    // Check if the logged-in user is the owner of the post
     if (post.username.toLowerCase() !== req.user.name.toLowerCase()) {
       return res.status(403).json({ message: "Forbidden: You can only delete your own posts" });
     }
     await Post.findOneAndDelete({ id: req.params.id });
-    res.sendStatus(204); // No content
+    res.sendStatus(204);
   } catch (err) {
     console.error("Delete post error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
@@ -127,7 +126,8 @@ router.delete("/:id/comment/:commentId", verifyToken, async (req, res) => {
       return res.status(403).json({ message: "Forbidden: You can only delete your own comments" });
     }
 
-    comment.remove();
+    post.comments.pull(req.params.commentId);
+
     await post.save();
     res.json(post);
   } catch (err) {

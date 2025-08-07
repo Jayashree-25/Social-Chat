@@ -147,25 +147,14 @@ export const FeedProvider = ({ children }) => {
   };
 
   const addComment = async (postId, username, text) => {
-    if (!username || !text) {
-      console.warn("Username and text are required for comment");
-      return;
-    }
-
     const token = localStorage.getItem("token");
-    if (!token) {
-      console.warn("No token available");
-      return;
-    }
-
+    if (!token) return;
     try {
       const response = await axios.post(
         `http://localhost:5000/api/posts/${postId}/comment`,
-        { text }, // Changed: Backend gets username from token, so we only need to send the text
+        { text },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("API Response for comment:", response.data);
-
       if (response.data) {
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
@@ -173,33 +162,19 @@ export const FeedProvider = ({ children }) => {
           )
         );
       }
-      else {
-        console.error("Comment operation failed, no valid comments array in response");
-      }
     } catch (err) {
-      console.error("Comment failed:", {
-        message: err.message,
-        status: err.response?.status,
-        data: err.response?.data,
-      });
+      console.error("Comment failed:", err);
     }
   };
 
   const deleteComment = async (postId, commentId) => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      console.warn("No token available, cannot delete comment");
-      return;
-    }
-
+    if (!token) return;
     try {
       const response = await axios.delete(
         `http://localhost:5000/api/posts/${postId}/comment/${commentId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      console.log("Deleted comment response:", response.data);
-
       if (response.data) {
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
@@ -208,21 +183,13 @@ export const FeedProvider = ({ children }) => {
         );
       }
     } catch (err) {
-      console.error("Failed to delete comment:", {
-        message: err.message,
-        status: err.response?.status,
-        data: err.response?.data,
-      });
+      console.error("Failed to delete comment:", err);
     }
   };
 
   const editComment = async (postId, commentId, text) => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      console.warn("No token available, cannot edit comment");
-      return;
-    }
-
+    if (!token) return;
     try {
       const response = await axios.put(
         `http://localhost:5000/api/posts/${postId}/comment/${commentId}`,
@@ -237,11 +204,7 @@ export const FeedProvider = ({ children }) => {
         );
       }
     } catch (err) {
-      console.error("Failed to edit comment:", {
-        message: err.message,
-        status: err.response?.status,
-        data: err.response?.data,
-      });
+      console.error("Failed to edit comment:", err);
     }
   };
 
