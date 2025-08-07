@@ -53,6 +53,16 @@ const MainLayout = () => {
         };
     }, []);
 
+    useEffect(() => {
+        // If the comments popup is open...
+        if (showAllComments) {
+            const updatedPost = posts.find(p => p.id === showAllComments.id);
+            if (updatedPost) {
+                setShowAllComments(updatedPost);
+            }
+        }
+    }, [posts]);
+
     if (loading) return <p>Loading user...</p>;
     if (error) return <p>Error: {error}</p>;
     if (!currentUser) return <p>User not logged in</p>;
@@ -399,28 +409,55 @@ const MainLayout = () => {
                             <div key={comment._id} style={{ marginBottom: "16px" }}>
                                 <strong style={{ color: '#e5e7eb' }}>{comment.user}</strong>
                                 {editCommentId === comment._id ? (
-                                    <div>
-                                        <input type="text" value={editText} onChange={(e) => setEditText(e.target.value)} />
-                                        <button onClick={() => handleSaveEditComment(showAllComments.id, comment._id)}>Save</button>
+                                    <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                                        <input type="text" value={editText} onChange={(e) => setEditText(e.target.value)} style={{ flex: "1", padding: "8px 12px", border: "1px solid rgba(255, 255, 255, 0.2)", background: "rgba(0, 0, 0, 0.2)", color: '#fff', borderRadius: "8px", fontSize: "0.9rem", outline: 'none' }} />
+                                        <div style={{ padding: '2px', background: 'linear-gradient(to right, #11998e, #38ef7d)', borderRadius: '10px' }}>
+                                            <button onClick={() => handleSaveEditComment(showAllComments.id, comment._id)} style={{ background: "rgba(25, 25, 25, 1)", color: "white", border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: 500 }}>Save</button>
+                                        </div>
                                     </div>
                                 ) : (
                                     <p style={{ color: 'rgba(255,255,255,0.8)', margin: '4px 0 0 0' }}>{comment.text}</p>
                                 )}
                                 <small style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>{new Date(comment.createdAt).toLocaleString()}</small>
                                 {currentUser.username.toLowerCase() === comment.user.toLowerCase() && (
-                                    <div>
-                                        <button onClick={() => handleEditComment(comment)}>Edit</button>
-                                        <button onClick={() => handleDeleteComment(showAllComments.id, comment._id)}>Delete</button>
+                                    <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                                        <div style={{ padding: '2px', background: 'linear-gradient(to right, #be4ef6ff, #ebade3ff)', borderRadius: '10px' }}>
+                                            <button onClick={() => handleEditComment(comment)} style={{ background: "rgba(25, 25, 25, 1)", color: "white", border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: 500 }}>Edit</button>
+                                        </div>
+                                        <div style={{ padding: '2px', background: 'linear-gradient(to right, #fa7bf6ff, #ea7c1bff)', borderRadius: '10px' }}>
+                                            <button onClick={() => handleDeleteComment(showAllComments.id, comment._id)} style={{ background: "rgba(25, 25, 25, 1)", color: "white", border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: 500 }}>Delete</button>
+                                        </div>
                                     </div>
                                 )}
                             </div>
                         ))}
-                        <button
-                            onClick={closePopup}
-                            style={{ background: "#f44336", color: "white", border: "none", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", marginTop: "20px", width: '100%' }}
+                        <div
+                            style={{
+                                padding: '2px',
+                                background: 'linear-gradient(to right, #9b59b6, #e74c3c)',
+                                borderRadius: '10px',
+                                marginTop: '20px',
+                            }}
                         >
-                            Close
-                        </button>
+                            <button
+                                onClick={closePopup}
+                                style={{
+                                    background: "rgba(255, 255, 255, 0.1)",
+                                    color: "rgba(255, 255, 255, 0.8)",
+                                    border: "none",
+                                    padding: "10px 20px",
+                                    borderRadius: "8px",
+                                    cursor: "pointer",
+                                    width: '100%',
+                                    fontWeight: '600',
+                                    transition: 'background-color 0.2s ease'
+                                }}
+                                onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
+                                onMouseOut={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+                            >
+                                Close
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
