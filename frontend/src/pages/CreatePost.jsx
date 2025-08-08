@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { FeedContext } from "../components/FeedContext";
 import { useNavigate } from "react-router-dom";
 import { auroraStyle } from "../styles/AuthStyles";
@@ -9,8 +9,10 @@ const CreatePost = () => {
     const [images, setImages] = useState([]);
     const [text, setText] = useState("");
     const [showEmojis, setShowEmojis] = useState(false);
+    const [hoveredImageIndex, setHoveredImageIndex] = useState(null);
     const { addPost } = useContext(FeedContext);
     const navigate = useNavigate();
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         const styleTag = document.createElement("style");
@@ -23,8 +25,12 @@ const CreatePost = () => {
 
     const handleImageUpload = (e) => {
         const files = Array.from(e.target.files);
-        const newImages = files.map(file => URL.createObjectURL(file));
-        setImages(newImages);
+        const newImageUrls = files.map(file => URL.createObjectURL(file));
+        setImages(prev => [...prev, ...newImageUrls]);
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = null;
+        }
     };
 
     const handlePost = () => {
@@ -41,6 +47,11 @@ const CreatePost = () => {
 
     const onEmojiClick = (emojiObject) => {
         setText(prevText => prevText + emojiObject.emoji);
+    };
+
+    const handleRemoveImage = (indexToRemove) => {
+        setImages(prevImages => prevImages.filter((_, index) => index !== indexToRemove));
+        setHoveredImageIndex(null);
     };
 
     return (
@@ -88,21 +99,51 @@ const CreatePost = () => {
                         accept="image/*"
                         style={{ display: "none" }}
                         onChange={handleImageUpload}
+                        ref={fileInputRef}
                     />
                     <div style={{ display: "flex", overflowX: "auto", gap: "10px", minHeight: '100px' }}>
                         {images.map((imgSrc, index) => (
-                            <img
+                            <div
                                 key={index}
-                                src={imgSrc}
-                                alt={`uploaded-${index}`}
-                                style={{ height: "100px", width: '100px', objectFit: 'cover', borderRadius: "10px" }}
-                            />
+                                style={{ position: 'relative', flexShrink: 0 }}
+                                onMouseEnter={() => setHoveredImageIndex(index)}
+                                onMouseLeave={() => setHoveredImageIndex(null)}
+                            >
+                                <img
+                                    src={imgSrc}
+                                    alt={`uploaded-${index}`}
+                                    style={{ height: "100px", width: '100px', objectFit: 'cover', borderRadius: "10px" }}
+                                />
+                                {hoveredImageIndex === index && (
+                                    <div
+                                        onClick={() => handleRemoveImage(index)}
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            background: 'rgba(0, 0, 0, 0.6)',
+                                            backdropFilter: 'blur(4px)',
+                                            borderRadius: '10px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            cursor: 'pointer',
+                                            transition: 'opacity 0.3s ease',
+                                            opacity: 1
+                                        }}
+                                    >
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                    </div>
+                                )}
+                            </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Right Column: Text and Post Button */}
-                <div style={{ flex: 1, display: "flex", flexDirection: "column", position: 'relative' }}>    
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", position: 'relative' }}>
                     <div style={{ flexGrow: 1, position: 'relative', display: 'flex', flexDirection: 'column', }}>
                         <textarea
                             value={text}
@@ -111,7 +152,7 @@ const CreatePost = () => {
                             style={{
                                 flexGrow: 1,
                                 borderRadius: "10px",
-                                padding: "15px 45px 15px 15px", 
+                                padding: "15px 45px 15px 15px",
                                 resize: "none",
                                 border: "1px solid rgba(255, 255, 255, 0.2)",
                                 background: "rgba(0, 0, 0, 0.2)",
@@ -120,7 +161,7 @@ const CreatePost = () => {
                                 outline: "none",
                             }}
                         />
-                        
+
                         <button
                             onClick={() => setShowEmojis(!showEmojis)}
                             style={{
