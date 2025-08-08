@@ -2,11 +2,13 @@ import React, { useState, useContext, useEffect } from "react";
 import { FeedContext } from "../components/FeedContext";
 import { useNavigate } from "react-router-dom";
 import { auroraStyle } from "../styles/AuthStyles";
+import Picker from "emoji-picker-react";
 
 const CreatePost = () => {
 
     const [images, setImages] = useState([]);
     const [text, setText] = useState("");
+    const [showEmojis, setShowEmojis] = useState(false);
     const { addPost } = useContext(FeedContext);
     const navigate = useNavigate();
 
@@ -23,7 +25,7 @@ const CreatePost = () => {
         const files = Array.from(e.target.files);
         const newImages = files.map(file => URL.createObjectURL(file));
         setImages(newImages);
-    }
+    };
 
     const handlePost = () => {
         if (text.trim() === "" && images.length === 0) return;
@@ -35,10 +37,14 @@ const CreatePost = () => {
         };
         addPost(newPost);
         navigate("/home");
-    }
+    };
+
+    const onEmojiClick = (emojiObject) => {
+        setText(prevText => prevText + emojiObject.emoji);
+    };
 
     return (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: '97vh',  }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: '97vh', }}>
             <div style={{
                 display: "flex",
                 gap: "2rem",
@@ -96,42 +102,78 @@ const CreatePost = () => {
                 </div>
 
                 {/* Right Column: Text and Post Button */}
-                <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-                    <textarea
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                        placeholder="What's on your mind?"
-                        style={{
-                            flexGrow: 1,
-                            borderRadius: "10px",
-                            padding: "15px",
-                            resize: "none",
-                            border: "1px solid rgba(255, 255, 255, 0.2)",
-                            background: "rgba(0, 0, 0, 0.2)",
-                            fontSize: "16px",
-                            color: "#fff",
-                            outline: "none",
-                            marginBottom: '1rem'
-                        }}
-                    />
-                    <button
-                        onClick={handlePost}
-                        style={{
-                            padding: "12px 25px",
-                            background: "linear-gradient(to right, #8e2de2, #4a00e0)",
-                            border: "none",
-                            borderRadius: "10px",
-                            fontWeight: "bold",
-                            color: "#fff",
-                            cursor: "pointer",
-                            alignSelf: "flex-end",
-                            transition: 'opacity 0.2s ease'
-                        }}
-                        onMouseOver={(e) => e.target.style.opacity = 0.9}
-                        onMouseOut={(e) => e.target.style.opacity = 1}
-                    >
-                        Post
-                    </button>
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", position: 'relative' }}>    
+                    <div style={{ flexGrow: 1, position: 'relative', display: 'flex', flexDirection: 'column', }}>
+                        <textarea
+                            value={text}
+                            onChange={(e) => setText(e.target.value)}
+                            placeholder="What's on your mind?"
+                            style={{
+                                flexGrow: 1,
+                                borderRadius: "10px",
+                                padding: "15px 45px 15px 15px", 
+                                resize: "none",
+                                border: "1px solid rgba(255, 255, 255, 0.2)",
+                                background: "rgba(0, 0, 0, 0.2)",
+                                fontSize: "16px",
+                                color: "#fff",
+                                outline: "none",
+                            }}
+                        />
+                        
+                        <button
+                            onClick={() => setShowEmojis(!showEmojis)}
+                            style={{
+                                position: 'absolute',
+                                bottom: '5px',
+                                right: '15px',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '24px',
+                                padding: 0,
+                                opacity: 0.7,
+                                color: "#c48df5ff",
+                            }}
+                        >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                        </button>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', }}>
+                        <button
+                            onClick={handlePost}
+                            style={{
+                                padding: "10px 25px",
+                                background: "linear-gradient(to right, #8e2de2, #4a00e0)",
+                                border: "none",
+                                borderRadius: "10px",
+                                fontWeight: "bold",
+                                color: "#fff",
+                                cursor: "pointer",
+                                transition: 'opacity 0.2s ease',
+                                marginTop: "10px"
+                            }}
+                            onMouseOver={(e) => e.target.style.opacity = 0.9}
+                            onMouseOut={(e) => e.target.style.opacity = 1}
+                        >
+                            Post
+                        </button>
+                    </div>
+
+                    {showEmojis && (
+                        <div style={{ position: 'absolute', bottom: '80px', right: 0, zIndex: 10 }}> {/* Changed: Positioned relative to the right column */}
+                            <Picker
+                                onEmojiClick={onEmojiClick}
+                                theme="dark"
+                                pickerStyle={{
+                                    backgroundColor: 'rgba(25, 25, 25, 0.9)',
+                                    border: '1px solid rgba(255,255,255,0.15)',
+                                    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                                }}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
