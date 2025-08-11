@@ -14,7 +14,7 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: function(){
+        required: function () {
             return !this.googleId; //password required only if not signed in with Google
         }
     },
@@ -26,6 +26,14 @@ const UserSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    followers: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    following: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
 });
 
