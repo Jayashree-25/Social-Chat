@@ -72,7 +72,7 @@ const CreatePost = () => {
             }}>
                 {/* Left Column: Image Upload */}
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <label htmlFor="imageUpload" style={{
+                      <label htmlFor="imageUpload" style={{
                         cursor: "pointer",
                         padding: "20px",
                         border: "2px dashed rgba(255, 255, 255, 0.4)",
