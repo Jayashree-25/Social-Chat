@@ -1,27 +1,47 @@
 import express from "express";
 import Post from "../models/Post.js";
 import verifyToken from "../middleware/verifyToken.js";
+import cloudinary from "../config/cloudinary.js"; // Adjust the path if necessary
+import multer from "multer";
+import fs from "fs"; // Node.js built-in file system module
 
 const router = express.Router();
+const upload = multer({ dest: 'uploads/' }); // temporary storage location
 
 // Create Post
 router.post("/", verifyToken, async (req, res) => {
-  const { text, images } = req.body;
-  if (!text && (!images || !images.length)) {
+  const { text } = req.body;
+  const files = req.files;
+  if (!text && (!files || files.length === 0)) {
     return res.status(400).json({ message: "Text or images are required" });
   }
 
   try {
+    const imageUrls = [];
+
+    if (files && files.length > 0) {
+      for (const file of files) {
+        // Upload image to Cloudinary
+        const result = await cloudinary.uploader.upload(file.path, {
+          folder: "social_media_app",
+        });
+        imageUrls.push(result.secure_url);
+
+        // Delete the temporary file
+        fs.unlinkSync(file.path);
+      }
+    }
+
     const post = new Post({
       id: Date.now().toString(),
       text,
-      images: images || [],
+      images: imageUrls,
       username: req.user.name.toLowerCase(),
       likes: [],
       comments: [],
     });
+
     const savedPost = await post.save();
-    console.log("Post saved:", savedPost);
     res.status(201).json(savedPost);
   } catch (err) {
     console.error("Create Post Error: ", err);
