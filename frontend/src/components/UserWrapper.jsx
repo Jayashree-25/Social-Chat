@@ -15,8 +15,9 @@ const UserWrapper = ({ children }) => {
         const res = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         });
-        const user = { username: res.data.email, ...res.data };
-        localStorage.setItem("token", tokenResponse.access_token);
+        const user = { username: res.data.name || res.data.email, email: res.data.email, ...res.data };
+        const token = tokenResponse.access_token;
+        localStorage.setItem("token", token);
         localStorage.setItem("username", user.username);
         setCurrentUser(user);
         console.log("Google OAuth success, user:", user);
@@ -49,10 +50,9 @@ const UserWrapper = ({ children }) => {
         });
         const user = res.data.user;
         console.log("API response user:", user);
-        if (user?.username || user?.email) {
-          const username = user.username || user.email;
-          setCurrentUser({ ...user, username });
-          localStorage.setItem("username", username);
+        if (user?.username && user?.email) {
+          setCurrentUser(user);
+          localStorage.setItem("username", user.username);
         } else {
           setError("User data missing username or email");
         }
