@@ -1,14 +1,27 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import { FeedContext } from "../components/FeedContext";
 import { useNavigate } from "react-router-dom";
-import { auroraStyle } from "../styles/AuthStyles";
-import Picker from "emoji-picker-react";
+import { FeedContext } from "../components/FeedContext.jsx";
+
+// Inlined styles to resolve potential import errors
+const auroraStyle = `
+    @keyframes aurora {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    body {
+        background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e);
+        background-size: 400% 400%;
+        animation: aurora 15s ease infinite;
+    }
+`;
 
 const CreatePost = () => {
-
-    const [images, setImages] = useState([]);
+    // STATE FOR PREVIEW URLS (for displaying in <img> tags)
+    const [imagePreviews, setImagePreviews] = useState([]);
+    // STATE FOR ACTUAL FILE OBJECTS (for sending to the backend)
+    const [imageFiles, setImageFiles] = useState([]);
     const [text, setText] = useState("");
-    const [showEmojis, setShowEmojis] = useState(false);
     const [hoveredImageIndex, setHoveredImageIndex] = useState(null);
     const { addPost } = useContext(FeedContext);
     const navigate = useNavigate();
@@ -25,32 +38,40 @@ const CreatePost = () => {
 
     const handleImageUpload = (e) => {
         const files = Array.from(e.target.files);
+        
         const newImageUrls = files.map(file => URL.createObjectURL(file));
-        setImages(prev => [...prev, ...newImageUrls]);
+        setImagePreviews(prev => [...prev, ...newImageUrls]);
+
+        setImageFiles(prev => [...prev, ...files]);
 
         if (fileInputRef.current) {
             fileInputRef.current.value = null;
         }
     };
 
-    const handlePost = () => {
-        if (text.trim() === "" && images.length === 0) return;
+    const handlePost = async () => {
+        if (text.trim() === "" && imageFiles.length === 0) return;
 
-        const newPost = {
-            text,
-            images,
-            timestamp: new Date().toISOString(),
-        };
-        addPost(newPost);
+        const formData = new FormData();
+        formData.append('text', text);
+
+        if (imageFiles.length > 0) {
+            imageFiles.forEach(file => {
+                formData.append('images', file);
+            });
+        }
+        
+        await addPost(formData);
+        
         navigate("/home");
     };
 
-    const onEmojiClick = (emojiObject) => {
-        setText(prevText => prevText + emojiObject.emoji);
-    };
-
     const handleRemoveImage = (indexToRemove) => {
-        setImages(prevImages => prevImages.filter((_, index) => index !== indexToRemove));
+        // Revoke the object URL to free up memory
+        URL.revokeObjectURL(imagePreviews[indexToRemove]);
+
+        setImagePreviews(prevImages => prevImages.filter((_, index) => index !== indexToRemove));
+        setImageFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove));
         setHoveredImageIndex(null);
     };
 
@@ -72,7 +93,7 @@ const CreatePost = () => {
             }}>
                 {/* Left Column: Image Upload */}
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                      <label htmlFor="imageUpload" style={{
+                    <label htmlFor="imageUpload" style={{
                         cursor: "pointer",
                         padding: "20px",
                         border: "2px dashed rgba(255, 255, 255, 0.4)",
@@ -102,16 +123,16 @@ const CreatePost = () => {
                         ref={fileInputRef}
                     />
                     <div style={{ display: "flex", overflowX: "auto", gap: "10px", minHeight: '100px' }}>
-                        {images.map((imgSrc, index) => (
+                        {imagePreviews.map((imgSrc, index) => (
                             <div
-                                key={index}
+                                key={imgSrc} // Use the unique imgSrc for the key
                                 style={{ position: 'relative', flexShrink: 0 }}
                                 onMouseEnter={() => setHoveredImageIndex(index)}
                                 onMouseLeave={() => setHoveredImageIndex(null)}
                             >
                                 <img
                                     src={imgSrc}
-                                    alt={`uploaded-${index}`}
+                                    alt={`upload preview ${index}`}
                                     style={{ height: "100px", width: '100px', objectFit: 'cover', borderRadius: "10px" }}
                                 />
                                 {hoveredImageIndex === index && (
@@ -152,7 +173,7 @@ const CreatePost = () => {
                             style={{
                                 flexGrow: 1,
                                 borderRadius: "10px",
-                                padding: "15px 45px 15px 15px",
+                                padding: "15px",
                                 resize: "none",
                                 border: "1px solid rgba(255, 255, 255, 0.2)",
                                 background: "rgba(0, 0, 0, 0.2)",
@@ -161,24 +182,6 @@ const CreatePost = () => {
                                 outline: "none",
                             }}
                         />
-
-                        <button
-                            onClick={() => setShowEmojis(!showEmojis)}
-                            style={{
-                                position: 'absolute',
-                                bottom: '5px',
-                                right: '15px',
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: '24px',
-                                padding: 0,
-                                opacity: 0.7,
-                                color: "#c48df5ff",
-                            }}
-                        >
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                        </button>
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', }}>
@@ -201,20 +204,6 @@ const CreatePost = () => {
                             Post
                         </button>
                     </div>
-
-                    {showEmojis && (
-                        <div style={{ position: 'absolute', bottom: '80px', right: 0, zIndex: 10 }}> {/* Changed: Positioned relative to the right column */}
-                            <Picker
-                                onEmojiClick={onEmojiClick}
-                                theme="dark"
-                                pickerStyle={{
-                                    backgroundColor: 'rgba(25, 25, 25, 0.9)',
-                                    border: '1px solid rgba(255,255,255,0.15)',
-                                    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-                                }}
-                            />
-                        </div>
-                    )}
                 </div>
             </div>
         </div>
