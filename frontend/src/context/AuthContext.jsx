@@ -5,6 +5,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -16,15 +17,17 @@ export const AuthProvider = ({ children }) => {
           });
           setCurrentUser(response.data.user);
         } catch (err) {
-          console.error("Failed to fetch user:", err);
+          console.error("Token verification failed:", err);
           localStorage.removeItem("token");
+          setCurrentUser(null);
         }
       }
+      setLoading(false);
     };
-    fetchUser(); // Fixed from fetchPost()
+    fetchUser();
   }, []);
 
-  const login = async (token, userData) => {
+  const login = (token, userData) => {
     localStorage.setItem("token", token);
     setCurrentUser(userData);
   };
@@ -33,6 +36,10 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     setCurrentUser(null);
   };
+  
+  if (loading) {
+    return <div style={{textAlign: 'center', marginTop: '50px'}}>Loading session...</div>;
+  }
 
   return (
     <AuthContext.Provider value={{ currentUser, login, logout }}>
